@@ -1,0 +1,3784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tkinter Gui — Python Tkinter / ttk WYSIWYG Form Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- ========================================================================
+       STYLESHEET MODULE (styles.css)
+       ======================================================================== -->
+  <style id="module-styles-css">
+    /* ==========================================================================
+       CSS VARIABLES & THEME TOKENS (Modern Dark-Slate IDE Chrome)
+       ========================================================================== */
+    :root {
+      --bg-app: #0b1120;
+      --bg-panel: #0f172a;
+      --bg-panel-elevated: #1e293b;
+      --bg-input: #0b1120;
+      --bg-hover: #334155;
+      --border-subtle: #1e293b;
+      --border-strong: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-emerald: #10b981;
+      --accent-emerald-hover: #059669;
+      --accent-amber: #f59e0b;
+      --accent-danger: #ef4444;
+      --selection-ring: #2563eb;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 10px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      user-select: none;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* ==========================================================================
+       TOP TOOLBAR
+       ========================================================================== */
+    .topbar {
+      height: 52px;
+      background-color: var(--bg-panel);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      gap: 12px;
+      z-index: 30;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 13px;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-panel-elevated);
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toolbar-divider {
+      width: 1px;
+      height: 22px;
+      background-color: var(--border-strong);
+      margin: 0 4px;
+    }
+
+    .tb-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-strong);
+      background-color: var(--bg-panel-elevated);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .tb-btn:hover:not(:disabled) {
+      background-color: var(--bg-hover);
+      border-color: #475569;
+    }
+
+    .tb-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .tb-btn.active {
+      background-color: rgba(59, 130, 246, 0.2);
+      border-color: var(--accent-primary);
+      color: #93c5fd;
+    }
+
+    .tb-btn.primary {
+      background-color: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    }
+
+    .tb-btn.primary:hover {
+      background-color: var(--accent-emerald-hover);
+      border-color: var(--accent-emerald-hover);
+    }
+
+    .tb-btn.danger:hover {
+      background-color: rgba(239, 68, 68, 0.18);
+      border-color: var(--accent-danger);
+      color: #fca5a5;
+    }
+
+    .tb-select {
+      height: 32px;
+      padding: 0 8px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-strong);
+      background-color: var(--bg-panel-elevated);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .tb-select:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* ==========================================================================
+       3-PANE IDE WORKSPACE
+       ========================================================================== */
+    .workspace {
+      display: grid;
+      grid-template-columns: 260px 1fr 320px;
+      height: calc(100vh - 52px);
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* ==========================================================================
+       LEFT SIDEBAR: TOOLBOX
+       ========================================================================== */
+    .sidebar-left {
+      background-color: var(--bg-panel);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .pane-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toolbox-search-wrap {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .toolbox-search {
+      width: 100%;
+      height: 32px;
+      padding: 0 10px 0 30px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-strong);
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      font-size: 12px;
+      outline: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 9px center;
+    }
+
+    .toolbox-search:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .toolbox-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 10px 20px;
+    }
+
+    .toolbox-category {
+      margin-bottom: 14px;
+    }
+
+    .toolbox-cat-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 4px 6px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toolbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .tool-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 8px;
+      background-color: var(--bg-panel-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      cursor: grab;
+      transition: all 0.12s ease;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .tool-item:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+
+    .tool-item:active {
+      cursor: grabbing;
+    }
+
+    .tool-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: rgba(59, 130, 246, 0.14);
+      color: #60a5fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .tool-item.tk-classic .tool-icon {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+    }
+
+    .tool-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       CENTER WORKSPACE: WYSIWYG TKINTER CANVAS
+       ========================================================================== */
+    .canvas-viewport {
+      background-color: #080d19;
+      background-image: radial-gradient(#1e293b 1px, transparent 1px);
+      background-size: 20px 20px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 32px;
+      position: relative;
+    }
+
+    /* Realistic OS / Tkinter Window Frame */
+    .tk-window-frame {
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.12);
+      border-radius: 8px 8px 4px 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.15s ease, height 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .tk-titlebar {
+      height: 32px;
+      background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+      border-bottom: 1px solid #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tk-titlebar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tk-feather-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+    }
+
+    .tk-window-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tk-win-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .tk-canvas-surface {
+      position: relative;
+      background-color: #f0f0f0;
+      color: #000000;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .tk-canvas-surface.show-grid {
+      background-image:
+        linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    }
+
+    .tk-canvas-surface.drag-over {
+      outline: 2px dashed var(--accent-primary);
+      outline-offset: -4px;
+    }
+
+    /* Live Coordinate HUD Pill */
+    .coord-hud {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(15, 23, 42, 0.92);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      z-index: 25;
+      pointer-events: none;
+    }
+
+    .coord-hud span strong {
+      color: #60a5fa;
+    }
+
+    /* ==========================================================================
+       DESIGNED WIDGET WRAPPER & 8-DIRECTIONAL RESIZE HANDLES
+       ========================================================================== */
+    .canvas-widget {
+      position: absolute;
+      cursor: move;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+
+    .canvas-widget.is-container {
+      z-index: 2;
+    }
+
+    .canvas-widget:hover {
+      outline: 1px dashed rgba(37, 99, 235, 0.65);
+    }
+
+    .canvas-widget.selected {
+      outline: 2px solid var(--selection-ring) !important;
+      z-index: 50 !important;
+    }
+
+    .resize-handle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background-color: #ffffff;
+      border: 1.5px solid var(--selection-ring);
+      border-radius: 1px;
+      display: none;
+      z-index: 20;
+    }
+
+    .canvas-widget.selected .resize-handle {
+      display: block;
+    }
+
+    .resize-handle.nw { top: -4px; left: -4px; cursor: nwse-resize; }
+    .resize-handle.n  { top: -4px; left: calc(50% - 4px); cursor: ns-resize; }
+    .resize-handle.ne { top: -4px; right: -4px; cursor: nesw-resize; }
+    .resize-handle.e  { top: calc(50% - 4px); right: -4px; cursor: ew-resize; }
+    .resize-handle.se { bottom: -4px; right: -4px; cursor: nwse-resize; }
+    .resize-handle.s  { bottom: -4px; left: calc(50% - 4px); cursor: ns-resize; }
+    .resize-handle.sw { bottom: -4px; left: -4px; cursor: nesw-resize; }
+    .resize-handle.w  { top: calc(50% - 4px); left: -4px; cursor: ew-resize; }
+
+    /* ==========================================================================
+       AUTHENTIC TTK / TKINTER WIDGET VISUALS
+       ========================================================================== */
+    .w-inner {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    /* ttk.Frame */
+    .ttk-frame {
+      background: #f0f0f0;
+      border: 1px solid #c0c0c0;
+    }
+
+    /* ttk.LabelFrame */
+    .ttk-labelframe {
+      position: relative;
+      border: 1px solid #b5b5b5;
+      border-radius: 4px;
+      margin-top: 7px;
+      height: calc(100% - 7px);
+      background: transparent;
+    }
+    .ttk-labelframe-title {
+      position: absolute;
+      top: -9px;
+      left: 10px;
+      background: #f0f0f0;
+      padding: 0 5px;
+      font-size: 12px;
+      color: #111;
+    }
+
+    /* ttk.Label */
+    .ttk-label {
+      display: flex;
+      align-items: center;
+      padding: 0 2px;
+      white-space: nowrap;
+    }
+
+    /* ttk.Button */
+    .ttk-button {
+      background: linear-gradient(180deg, #ffffff 0%, #e5e5e5 100%);
+      border: 1px solid #adadad;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+      padding: 0 8px;
+    }
+
+    /* ttk.Checkbutton & ttk.Radiobutton */
+    .ttk-checkradio {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 2px;
+    }
+    .ttk-checkbox-box {
+      width: 14px;
+      height: 14px;
+      border: 1px solid #7a7a7a;
+      background: #ffffff;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ttk-checkbox-box.checked {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: #fff;
+    }
+    .ttk-radio-circle {
+      width: 14px;
+      height: 14px;
+      border: 1px solid #7a7a7a;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ttk-radio-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #2563eb;
+    }
+
+    /* ttk.Entry */
+    .ttk-entry {
+      background: #ffffff;
+      border: 1px solid #9e9e9e;
+      border-top-color: #6e6e6e;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      padding: 0 6px;
+      color: #111;
+    }
+
+    /* ttk.Combobox */
+    .ttk-combobox {
+      background: #ffffff;
+      border: 1px solid #9e9e9e;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 6px;
+    }
+    .ttk-combo-arrow {
+      width: 18px;
+      height: 100%;
+      background: linear-gradient(180deg, #f8f8f8 0%, #dcdcdc 100%);
+      border-left: 1px solid #b5b5b5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: #333;
+    }
+
+    /* ttk.Spinbox */
+    .ttk-spinbox {
+      background: #ffffff;
+      border: 1px solid #9e9e9e;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 6px;
+    }
+    .ttk-spin-arrows {
+      width: 16px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #b5b5b5;
+    }
+    .ttk-spin-btn {
+      flex: 1;
+      background: #eaeaea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7px;
+      line-height: 1;
+      color: #333;
+    }
+    .ttk-spin-btn:first-child {
+      border-bottom: 1px solid #b5b5b5;
+    }
+
+    /* ttk.Scale */
+    .ttk-scale {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .ttk-scale-track-h {
+      width: 100%;
+      height: 4px;
+      background: #d0d0d0;
+      border: 1px solid #a0a0a0;
+      border-radius: 2px;
+      position: relative;
+    }
+    .ttk-scale-thumb-h {
+      width: 12px;
+      height: 18px;
+      background: linear-gradient(180deg, #fff 0%, #dcdcdc 100%);
+      border: 1px solid #7a7a7a;
+      border-radius: 2px;
+      position: absolute;
+      top: -8px;
+      transform: translateX(-50%);
+    }
+    .ttk-scale-track-v {
+      width: 4px;
+      height: 100%;
+      background: #d0d0d0;
+      border: 1px solid #a0a0a0;
+      border-radius: 2px;
+      position: relative;
+    }
+    .ttk-scale-thumb-v {
+      width: 18px;
+      height: 12px;
+      background: linear-gradient(180deg, #fff 0%, #dcdcdc 100%);
+      border: 1px solid #7a7a7a;
+      border-radius: 2px;
+      position: absolute;
+      left: -8px;
+      transform: translateY(-50%);
+    }
+
+    /* ttk.Progressbar */
+    .ttk-progressbar {
+      background: #e6e6e6;
+      border: 1px solid #adadad;
+      border-radius: 2px;
+      padding: 1px;
+      display: flex;
+      align-items: flex-end;
+    }
+    .ttk-progress-fill-h {
+      height: 100%;
+      background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+      transition: width 0.15s ease;
+    }
+    .ttk-progress-fill-v {
+      width: 100%;
+      background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+    }
+
+    /* ttk.Scrollbar */
+    .ttk-scrollbar {
+      background: #f1f1f1;
+      border: 1px solid #c5c5c5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ttk-scrollbar.vertical {
+      flex-direction: column;
+    }
+    .ttk-sb-arrow {
+      width: 14px;
+      height: 14px;
+      background: #e4e4e4;
+      font-size: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+    }
+    .ttk-sb-thumb {
+      background: #c1c1c1;
+      border-radius: 2px;
+      flex: 0.45;
+      min-width: 10px;
+      min-height: 10px;
+    }
+
+    /* ttk.Separator */
+    .ttk-separator-h {
+      width: 100%;
+      height: 2px;
+      border-top: 1px solid #a0a0a0;
+      border-bottom: 1px solid #ffffff;
+      margin-top: calc(50% - 1px);
+    }
+    .ttk-separator-v {
+      width: 2px;
+      height: 100%;
+      border-left: 1px solid #a0a0a0;
+      border-right: 1px solid #ffffff;
+      margin: 0 auto;
+    }
+
+    /* ttk.Sizegrip */
+    .ttk-sizegrip {
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 2px,
+        #888 2px,
+        #888 3px
+      );
+      clip-path: polygon(100% 0, 0 100%, 100% 100%);
+    }
+
+    /* ttk.Treeview */
+    .ttk-treeview {
+      background: #ffffff;
+      border: 1px solid #9e9e9e;
+      display: flex;
+      flex-direction: column;
+    }
+    .ttk-tv-header {
+      display: flex;
+      background: linear-gradient(180deg, #ffffff 0%, #e6e6e6 100%);
+      border-bottom: 1px solid #b5b5b5;
+      font-size: 11px;
+      font-weight: 600;
+      color: #222;
+    }
+    .ttk-tv-col {
+      flex: 1;
+      padding: 4px 6px;
+      border-right: 1px solid #ccc;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ttk-tv-col:last-child {
+      border-right: none;
+    }
+    .ttk-tv-body {
+      flex: 1;
+      padding: 4px 6px;
+      font-size: 11px;
+      color: #666;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        #ffffff 0px,
+        #ffffff 20px,
+        #f8fafc 20px,
+        #f8fafc 40px
+      );
+    }
+
+    /* ttk.Notebook */
+    .ttk-notebook {
+      display: flex;
+      flex-direction: column;
+    }
+    .ttk-nb-tabs {
+      display: flex;
+      align-items: flex-end;
+      padding-left: 2px;
+      gap: 2px;
+    }
+    .ttk-nb-tab {
+      padding: 3px 10px;
+      font-size: 11px;
+      background: #e1e1e1;
+      border: 1px solid #adadad;
+      border-bottom: none;
+      border-radius: 3px 3px 0 0;
+      color: #333;
+    }
+    .ttk-nb-tab.active {
+      background: #f7f7f7;
+      font-weight: 600;
+      color: #000;
+      padding-top: 4px;
+      margin-bottom: -1px;
+      z-index: 2;
+    }
+    .ttk-nb-pane {
+      flex: 1;
+      background: #f7f7f7;
+      border: 1px solid #adadad;
+      padding: 8px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    /* ttk.PanedWindow */
+    .ttk-panedwindow {
+      border: 1px solid #a0a0a0;
+      background: #ececec;
+      display: flex;
+    }
+    .ttk-panedwindow.vertical {
+      flex-direction: column;
+    }
+    .ttk-pw-pane {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #666;
+    }
+    .ttk-pw-sash-h {
+      width: 5px;
+      background: #d4d4d4;
+      border-left: 1px solid #a0a0a0;
+      border-right: 1px solid #a0a0a0;
+    }
+    .ttk-pw-sash-v {
+      height: 5px;
+      background: #d4d4d4;
+      border-top: 1px solid #a0a0a0;
+      border-bottom: 1px solid #a0a0a0;
+    }
+
+    /* tk.Text & tk.Listbox & tk.Canvas */
+    .tk-text {
+      background: #ffffff;
+      border: 1px solid #8e8e8e;
+      padding: 4px 6px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+    .tk-listbox {
+      background: #ffffff;
+      border: 1px solid #8e8e8e;
+      font-size: 12px;
+    }
+    .tk-lb-item {
+      padding: 2px 6px;
+    }
+    .tk-lb-item:first-child {
+      background: #2563eb;
+      color: #ffffff;
+    }
+    .tk-canvas-box {
+      background: #ffffff;
+      border: 1px solid #8e8e8e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 11px;
+      background-image: linear-gradient(45deg, #f8fafc 25%, transparent 25%),
+        linear-gradient(-45deg, #f8fafc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f8fafc 75%),
+        linear-gradient(-45deg, transparent 75%, #f8fafc 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+
+    /* ==========================================================================
+       RIGHT SIDEBAR: HIERARCHY & PROPERTIES INSPECTOR
+       ========================================================================== */
+    .sidebar-right {
+      background-color: var(--bg-panel);
+      border-left: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .hierarchy-section {
+      height: 195px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .hierarchy-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px;
+    }
+
+    .tree-node {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 2px;
+    }
+
+    .tree-node:hover {
+      background-color: var(--bg-panel-elevated);
+      color: var(--text-primary);
+    }
+
+    .tree-node.active {
+      background-color: rgba(59, 130, 246, 0.22);
+      color: #93c5fd;
+      font-weight: 600;
+    }
+
+    .tree-node-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .tree-node-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: var(--bg-panel-elevated);
+      color: var(--text-muted);
+    }
+
+    .tree-node.active .tree-node-tag {
+      background: rgba(59, 130, 246, 0.3);
+      color: #bfdbfe;
+    }
+
+    .tree-node-del {
+      opacity: 0;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 0 4px;
+    }
+
+    .tree-node:hover .tree-node-del {
+      opacity: 1;
+    }
+
+    .tree-node-del:hover {
+      color: var(--accent-danger);
+    }
+
+    /* Properties Inspector */
+    .inspector-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .inspector-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px 24px;
+    }
+
+    .prop-group {
+      margin-bottom: 14px;
+      background: rgba(30, 41, 59, 0.45);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+    }
+
+    .prop-group-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #60a5fa;
+      margin-bottom: 8px;
+    }
+
+    .prop-row {
+      display: grid;
+      grid-template-columns: 105px 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .prop-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .prop-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .prop-input, .prop-select {
+      width: 100%;
+      height: 27px;
+      padding: 0 7px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      outline: none;
+    }
+
+    .prop-input:focus, .prop-select:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .prop-color-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prop-color-picker {
+      width: 28px;
+      height: 27px;
+      padding: 0;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .prop-checkbox {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--accent-primary);
+      cursor: pointer;
+    }
+
+    .prop-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .mini-field {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .mini-field span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      width: 14px;
+    }
+
+    /* ==========================================================================
+       CODE PREVIEW MODAL & TOAST NOTIFICATION
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 24px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 860px;
+      max-height: 88vh;
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow: auto;
+      background-color: #070b14;
+      padding: 16px;
+    }
+
+    .code-preview {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      white-space: pre;
+      user-select: text;
+    }
+
+    /* Python Syntax Highlighting Classes */
+    .py-kw { color: #c084fc; font-weight: 600; }
+    .py-cls { color: #38bdf8; }
+    .py-fn { color: #60a5fa; }
+    .py-str { color: #4ade80; }
+    .py-num { color: #fb923c; }
+    .py-cmt { color: #64748b; font-style: italic; }
+    .py-self { color: #f472b6; }
+
+    .modal-footer {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--bg-panel);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--bg-panel-elevated);
+      border: 1px solid var(--accent-emerald);
+      color: var(--text-primary);
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.25s ease;
+      z-index: 200;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 1024px) {
+      .workspace {
+        grid-template-columns: 220px 1fr 270px;
+      }
+      .brand-sub {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP TOOLBAR
+       ======================================================================== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">tk</div>
+      <span>Tkinter Gui</span>
+      <span class="brand-sub">Python Tkinter / ttk WYSIWYG</span>
+    </div>
+
+    <div class="toolbar-group">
+      <button id="btnSaveProject" class="tb-btn" title="Save Project (.gui)">💾 Save Project</button>
+      <button id="btnLoadProject" class="tb-btn" title="Load Project (.gui)">📂 Load Project</button>
+      <input type="file" id="fileInputLoad" accept=".gui" style="display: none;" />
+
+      <div class="toolbar-divider"></div>
+
+      <select id="presetSizeSelect" class="tb-select" title="Window Size Presets">
+        <option value="640x480">640 × 480 (Standard)</option>
+        <option value="800x600">800 × 600 (Desktop)</option>
+        <option value="420x340">420 × 340 (Dialog)</option>
+        <option value="500x520">500 × 520 (Form)</option>
+        <option value="custom">Custom Size</option>
+      </select>
+
+      <div class="toolbar-divider"></div>
+
+      <button id="btnToggleGrid" class="tb-btn active" title="Toggle Visual Grid">
+        <span># Grid</span>
+      </button>
+      <button id="btnToggleSnap" class="tb-btn active" title="Toggle Snap-to-Grid">
+        <span>🧲 Snap</span>
+      </button>
+      <select id="gridSizeSelect" class="tb-select" title="Grid Step Size">
+        <option value="5">5px</option>
+        <option value="10" selected>10px</option>
+        <option value="15">15px</option>
+        <option value="20">20px</option>
+      </select>
+
+      <div class="toolbar-divider"></div>
+
+      <button id="btnUndo" class="tb-btn" title="Undo (Ctrl+Z)" disabled>↶ Undo</button>
+      <button id="btnRedo" class="tb-btn" title="Redo (Ctrl+Y)" disabled>↷ Redo</button>
+    </div>
+
+    <div class="toolbar-group">
+      <select id="samplePresetSelect" class="tb-select" title="Load a Sample Form Template">
+        <option value="">Load Sample Form...</option>
+        <option value="login">Login Dialog</option>
+        <option value="registration">User Registration Form</option>
+        <option value="dashboard">System Monitor & Settings</option>
+      </select>
+
+      <button id="btnClear" class="tb-btn danger" title="Clear All Widgets">Clear</button>
+      <button id="btnPreviewCode" class="tb-btn" title="Preview Generated Python Code">{ } Preview Code</button>
+      <button id="btnExportPy" class="tb-btn primary" title="Download Runnable Python Script">⬇ Export .py</button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       3-PANE IDE WORKSPACE
+       ======================================================================== -->
+  <main class="workspace">
+    <!-- LEFT PANE: WIDGET TOOLBOX -->
+    <aside class="sidebar-left">
+      <div class="pane-header">
+        <span>Tkinter / ttk Toolbox</span>
+        <span style="font-size:10px; color:var(--text-muted);">Drag or Click</span>
+      </div>
+      <div class="toolbox-search-wrap">
+        <input type="text" id="toolboxSearch" class="toolbox-search" placeholder="Filter widgets (e.g. Button, Treeview)..." />
+      </div>
+      <div class="toolbox-list" id="toolboxList"></div>
+    </aside>
+
+    <!-- CENTER PANE: WYSIWYG CANVAS -->
+    <section class="canvas-viewport" id="canvasViewport">
+      <div class="tk-window-frame" id="tkWindowFrame">
+        <div class="tk-titlebar" id="tkTitlebar" title="Click to edit Root Window properties">
+          <div class="tk-titlebar-left">
+            <div class="tk-feather-icon">tk</div>
+            <span id="tkWindowTitleText">My Tkinter App</span>
+          </div>
+          <div class="tk-window-controls">
+            <div class="tk-win-btn" style="background:#facc15;"></div>
+            <div class="tk-win-btn" style="background:#4ade80;"></div>
+            <div class="tk-win-btn" style="background:#f87171;"></div>
+          </div>
+        </div>
+        <div class="tk-canvas-surface show-grid" id="tkCanvasSurface"></div>
+      </div>
+
+      <div class="coord-hud" id="coordHud">
+        <span>Selected: <strong id="hudSelected">Root Window</strong></span>
+        <span>Pos: <strong id="hudPos">0, 0</strong></span>
+        <span>Size: <strong id="hudSize">640 × 480</strong></span>
+      </div>
+    </section>
+
+    <!-- RIGHT PANE: WIDGET HIERARCHY & PROPERTIES INSPECTOR -->
+    <aside class="sidebar-right">
+      <div class="hierarchy-section">
+        <div class="pane-header">
+          <span>Widget Hierarchy</span>
+          <span id="widgetCountBadge" style="font-family:var(--font-mono); color:#60a5fa;">0</span>
+        </div>
+        <div class="hierarchy-list" id="hierarchyList"></div>
+      </div>
+
+      <div class="inspector-section">
+        <div class="pane-header">
+          <span>Properties Inspector</span>
+          <span id="inspectorTargetType" style="font-family:var(--font-mono); color:#34d399; text-transform:none;">tk.Tk</span>
+        </div>
+        <div class="inspector-body" id="inspectorBody"></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ========================================================================
+       PYTHON CODE PREVIEW MODAL
+       ======================================================================== -->
+  <div class="modal-backdrop" id="codeModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span style="color:#10b981; font-family:var(--font-mono);">tkinter_form.py</span>
+          <span style="font-size:11px; color:var(--text-secondary); font-weight:400;">— Ready to run with Python 3</span>
+        </div>
+        <button id="btnCloseModal" class="tb-btn">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        <pre class="code-preview" id="codePreviewContent"></pre>
+      </div>
+      <div class="modal-footer">
+        <span style="font-size:11px; color:var(--text-secondary);">Uses standard library <code>tkinter</code> &amp; <code>tkinter.ttk</code> — zero external dependencies.</span>
+        <div class="toolbar-group">
+          <button id="btnCopyCode" class="tb-btn">📋 Copy Code</button>
+          <button id="btnModalDownload" class="tb-btn primary">⬇ Download .py</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Feedback -->
+  <div class="toast" id="toastMsg"></div>
+
+  <!-- ========================================================================
+       APPLICATION MODULE (app.js)
+       ======================================================================== -->
+  <script id="module-app-js">
+    (() => {
+      'use strict';
+
+      /* ======================================================================
+         1. WIDGET DEFINITIONS & METADATA (TkDocs ttk + Essential tk)
+         ====================================================================== */
+      const WIDGET_CATALOG = [
+        // Containers
+        {
+          type: 'ttk.Frame',
+          label: 'Frame',
+          category: 'Containers',
+          icon: 'FRM',
+          isTtk: true,
+          defaultSize: { width: 220, height: 140 },
+          defaults: {
+            relief: 'groove',
+            borderwidth: 1,
+            cursor: '',
+            takefocus: false
+          }
+        },
+        {
+          type: 'ttk.LabelFrame',
+          label: 'LabelFrame',
+          category: 'Containers',
+          icon: 'LFR',
+          isTtk: true,
+          defaultSize: { width: 240, height: 150 },
+          defaults: {
+            text: 'Group Box',
+            relief: 'groove',
+            borderwidth: 1,
+            cursor: '',
+            takefocus: false
+          }
+        },
+        {
+          type: 'ttk.Notebook',
+          label: 'Notebook',
+          category: 'Containers',
+          icon: 'TAB',
+          isTtk: true,
+          defaultSize: { width: 280, height: 180 },
+          defaults: {
+            tabs: 'General, Advanced, About',
+            cursor: '',
+            takefocus: true
+          }
+        },
+        {
+          type: 'ttk.PanedWindow',
+          label: 'PanedWindow',
+          category: 'Containers',
+          icon: 'PNE',
+          isTtk: true,
+          defaultSize: { width: 260, height: 150 },
+          defaults: {
+            orient: 'horizontal',
+            cursor: '',
+            takefocus: false
+          }
+        },
+
+        // Basic & Input Widgets
+        {
+          type: 'ttk.Label',
+          label: 'Label',
+          category: 'Basic & Inputs',
+          icon: 'LBL',
+          isTtk: true,
+          defaultSize: { width: 120, height: 26 },
+          defaults: {
+            text: 'Label Text',
+            textvariable: '',
+            fontFamily: 'Segoe UI',
+            fontSize: 10,
+            fontWeight: 'normal',
+            foreground: '#000000',
+            background: '#f0f0f0',
+            justify: 'left',
+            anchor: 'w',
+            relief: 'flat',
+            borderwidth: 0,
+            cursor: '',
+            takefocus: false
+          }
+        },
+        {
+          type: 'ttk.Button',
+          label: 'Button',
+          category: 'Basic & Inputs',
+          icon: 'BTN',
+          isTtk: true,
+          defaultSize: { width: 110, height: 32 },
+          defaults: {
+            text: 'Button',
+            textvariable: '',
+            fontFamily: 'Segoe UI',
+            fontSize: 10,
+            fontWeight: 'normal',
+            foreground: '#000000',
+            background: '#e5e5e5',
+            state: 'normal',
+            command: '',
+            cursor: 'hand2',
+            takefocus: true
+          }
+        },
+        {
+          type: 'ttk.Checkbutton',
+          label: 'Checkbutton',
+          category: 'Basic & Inputs',
+          icon: 'CHK',
+          isTtk: true,
+          defaultSize: { width: 140, height: 26 },
+          defaults: {
+            text: 'Check Option',
+            variable: '',
+            onvalue: '1',
+            offvalue: '0',
+            checked: true,
+            state: 'normal',
+            command: '',
+            cursor: 'hand2',
+            takefocus: true
+          }
+        },
+        {
+          type: 'ttk.Radiobutton',
+          label: 'Radiobutton',
+          category: 'Basic & Inputs',
+          icon: 'RAD',
+          isTtk: true,
+          defaultSize: { width: 140, height: 26 },
+          defaults: {
+            text: 'Radio Choice',
+            variable: 'radio_group_var',
+            value: 'option_1',
+            checked: true,
+            state: 'normal',
+            command: '',
+            cursor: 'hand2',
+            takefocus: true
+          }
+        },
+        {
+          type: 'ttk.Entry',
+          label: 'Textbox',
+          category: 'Basic & Inputs',
+          icon: 'TXT',
+          isTtk: true,
+          defaultSize: { width: 180, height: 28 },
+          defaults: {
+            value: '',
+            placeholder: 'Enter text...',
+            textvariable: '',
+            show: '',
+            fontFamily: 'Segoe UI',
+            fontSize: 10,
+            fontWeight: 'normal',
+            foreground: '#000000',
+            justify: 'left',
+            state: 'normal',
+            cursor: 'xterm',
+            takefocus: true
+          }
+        },
+        {
+          type: 'ttk.Combobox',
+          label: 'Combobox',
+          category: 'Basic & Inputs',
+          icon: 'CMB',
+          isTtk: true,
+          defaultSize: { width: 180, height: 28 },
+          defaults: {
+            value: 'Option 1',
+            values: 'Option 1, Option 2, Option 3',
+            textvariable: '',
+            state: 'readonly',
+            cursor: 'hand2',
+            takefocus: true
+          }
+        },
+        {
+          type: 'ttk.Spinbox',
+          label: 'Spinbox',
+          category: 'Basic & Inputs',
+          icon: 'SPN',
+          isTtk: true,
+          defaultSize: { width: 110, height: 28 },
+          defaults: {
+            from_: 0,
+            to: 100,
+            value: 10,
+            textvariable: '',
+            state: 'normal',
+            command: '',
+            cursor: '',
+            takefocus: true
+          }
+        },
+
+        // Indicators, Navigation & Data
+        {
+          type: 'ttk.Scale',
+          label: 'Scale',
+          category: 'Data & Indicators',
+          icon: 'SCL',
+          isTtk: true,
+          defaultSize: { width: 180, height: 28 },
+          defaults: {
+            from_: 0,
+            to: 100,
+            value: 45,
+            orient: 'horizontal',
+            variable: '',
+            command: '',
+            cursor: 'hand2',
+            takefocus: true
+          }
+        },
+        {
+          type: 'ttk.Progressbar',
+          label: 'Progressbar',
+          category: 'Data & Indicators',
+          icon: 'PRG',
+          isTtk: true,
+          defaultSize: { width: 200, height: 22 },
+          defaults: {
+            maximum: 100,
+            value: 65,
+            orient: 'horizontal',
+            mode: 'determinate',
+            variable: '',
+            cursor: '',
+            takefocus: false
+          }
+        },
+        {
+          type: 'ttk.Treeview',
+          label: 'Treeview',
+          category: 'Data & Indicators',
+          icon: 'TRE',
+          isTtk: true,
+          defaultSize: { width: 280, height: 150 },
+          defaults: {
+            columns: 'ID, Name, Role, Status',
+            cursor: '',
+            takefocus: true
+          }
+        },
+        {
+          type: 'ttk.Scrollbar',
+          label: 'Scrollbar',
+          category: 'Data & Indicators',
+          icon: 'SCR',
+          isTtk: true,
+          defaultSize: { width: 18, height: 140 },
+          defaults: {
+            orient: 'vertical',
+            cursor: '',
+            takefocus: false
+          }
+        },
+        {
+          type: 'ttk.Separator',
+          label: 'Separator',
+          category: 'Data & Indicators',
+          icon: 'SEP',
+          isTtk: true,
+          defaultSize: { width: 200, height: 10 },
+          defaults: {
+            orient: 'horizontal',
+            cursor: '',
+            takefocus: false
+          }
+        },
+        {
+          type: 'ttk.Sizegrip',
+          label: 'Sizegrip',
+          category: 'Data & Indicators',
+          icon: 'GRP',
+          isTtk: true,
+          defaultSize: { width: 18, height: 18 },
+          defaults: {
+            cursor: 'size_nw_se',
+            takefocus: false
+          }
+        },
+
+        // Classic tk Widgets
+        {
+          type: 'tk.Text',
+          label: 'Text Area',
+          category: 'Classic tk Widgets',
+          icon: 'TXA',
+          isTtk: false,
+          defaultSize: { width: 240, height: 110 },
+          defaults: {
+            text: 'Multiline text area...',
+            wrap: 'word',
+            fontFamily: 'Consolas',
+            fontSize: 10,
+            fontWeight: 'normal',
+            foreground: '#000000',
+            background: '#ffffff',
+            relief: 'sunken',
+            borderwidth: 1,
+            state: 'normal',
+            cursor: 'xterm',
+            takefocus: true
+          }
+        },
+        {
+          type: 'tk.Listbox',
+          label: 'Listbox',
+          category: 'Classic tk Widgets',
+          icon: 'LST',
+          isTtk: false,
+          defaultSize: { width: 160, height: 120 },
+          defaults: {
+            values: 'Item 1, Item 2, Item 3, Item 4',
+            fontFamily: 'Segoe UI',
+            fontSize: 10,
+            fontWeight: 'normal',
+            foreground: '#000000',
+            background: '#ffffff',
+            relief: 'sunken',
+            borderwidth: 1,
+            state: 'normal',
+            cursor: '',
+            takefocus: true
+          }
+        },
+        {
+          type: 'tk.Canvas',
+          label: 'Canvas',
+          category: 'Classic tk Widgets',
+          icon: 'CVS',
+          isTtk: false,
+          defaultSize: { width: 220, height: 140 },
+          defaults: {
+            background: '#ffffff',
+            relief: 'sunken',
+            borderwidth: 1,
+            cursor: 'crosshair',
+            takefocus: false
+          }
+        }
+      ];
+
+      /* ======================================================================
+         2. APPLICATION STATE & UNDO/REDO HISTORY
+         ====================================================================== */
+      const state = {
+        window: {
+          title: 'My Tkinter App',
+          width: 640,
+          height: 480,
+          background: '#f0f0f0',
+          resizable: true,
+          theme: 'clam'
+        },
+        grid: {
+          enabled: true,
+          snap: true,
+          size: 10
+        },
+        widgets: [],
+        selectedId: null, // null means Root Window is selected
+        counters: {},
+        history: [],
+        historyIndex: -1
+      };
+
+      // DOM References
+      const dom = {
+        toolboxSearch: document.getElementById('toolboxSearch'),
+        toolboxList: document.getElementById('toolboxList'),
+        tkWindowFrame: document.getElementById('tkWindowFrame'),
+        tkTitlebar: document.getElementById('tkTitlebar'),
+        tkWindowTitleText: document.getElementById('tkWindowTitleText'),
+        tkCanvasSurface: document.getElementById('tkCanvasSurface'),
+        hierarchyList: document.getElementById('hierarchyList'),
+        widgetCountBadge: document.getElementById('widgetCountBadge'),
+        inspectorTargetType: document.getElementById('inspectorTargetType'),
+        inspectorBody: document.getElementById('inspectorBody'),
+        hudSelected: document.getElementById('hudSelected'),
+        hudPos: document.getElementById('hudPos'),
+        hudSize: document.getElementById('hudSize'),
+        presetSizeSelect: document.getElementById('presetSizeSelect'),
+        btnToggleGrid: document.getElementById('btnToggleGrid'),
+        btnToggleSnap: document.getElementById('btnToggleSnap'),
+        gridSizeSelect: document.getElementById('gridSizeSelect'),
+        btnUndo: document.getElementById('btnUndo'),
+        btnRedo: document.getElementById('btnRedo'),
+        samplePresetSelect: document.getElementById('samplePresetSelect'),
+        btnClear: document.getElementById('btnClear'),
+        btnPreviewCode: document.getElementById('btnPreviewCode'),
+        btnExportPy: document.getElementById('btnExportPy'),
+        codeModal: document.getElementById('codeModal'),
+        codePreviewContent: document.getElementById('codePreviewContent'),
+        btnCloseModal: document.getElementById('btnCloseModal'),
+        btnCopyCode: document.getElementById('btnCopyCode'),
+        btnModalDownload: document.getElementById('btnModalDownload'),
+        toastMsg: document.getElementById('toastMsg')
+      };
+
+      /* ======================================================================
+         3. UTILITY FUNCTIONS
+         ====================================================================== */
+      function showToast(msg) {
+        dom.toastMsg.textContent = msg;
+        dom.toastMsg.classList.add('show');
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => {
+          dom.toastMsg.classList.remove('show');
+        }, 2500);
+      }
+
+      function snapVal(val) {
+        if (!state.grid.snap) return Math.round(val);
+        const step = state.grid.size;
+        return Math.round(val / step) * step;
+      }
+
+      function sanitizePythonIdentifier(raw, fallback = 'widget_1') {
+        let cleaned = String(raw || '')
+          .trim()
+          .replace(/[^a-zA-Z0-9_]/g, '_')
+          .replace(/^[0-9]+/, '');
+        if (!cleaned) cleaned = fallback;
+        const keywords = new Set([
+          'False','None','True','and','as','assert','async','await','break',
+          'class','continue','def','del','elif','else','except','finally',
+          'for','from','global','if','import','in','is','lambda','nonlocal',
+          'not','or','pass','raise','return','try','while','with','yield'
+        ]);
+        if (keywords.has(cleaned)) cleaned += '_var';
+        return cleaned;
+      }
+
+      function generateUniqueVarName(type) {
+        const base = type.split('.')[1].toLowerCase();
+        state.counters[base] = (state.counters[base] || 0) + 1;
+        let candidate = `${base}_${state.counters[base]}`;
+        while (state.widgets.some(w => w.variable_name === candidate)) {
+          state.counters[base]++;
+          candidate = `${base}_${state.counters[base]}`;
+        }
+        return candidate;
+      }
+
+      function pushHistory() {
+        const snapshot = JSON.stringify({
+          window: state.window,
+          widgets: state.widgets,
+          selectedId: state.selectedId
+        });
+        if (state.historyIndex < state.history.length - 1) {
+          state.history = state.history.slice(0, state.historyIndex + 1);
+        }
+        state.history.push(snapshot);
+        if (state.history.length > 50) state.history.shift();
+        state.historyIndex = state.history.length - 1;
+        updateUndoRedoButtons();
+      }
+
+      function undo() {
+        if (state.historyIndex <= 0) return;
+        state.historyIndex--;
+        restoreSnapshot(state.history[state.historyIndex]);
+      }
+
+      function redo() {
+        if (state.historyIndex >= state.history.length - 1) return;
+        state.historyIndex++;
+        restoreSnapshot(state.history[state.historyIndex]);
+      }
+
+      function restoreSnapshot(jsonStr) {
+        const snap = JSON.parse(jsonStr);
+        state.window = snap.window;
+        state.widgets = snap.widgets;
+        state.selectedId = snap.selectedId;
+        updateUndoRedoButtons();
+        renderAll();
+      }
+
+      function updateUndoRedoButtons() {
+        dom.btnUndo.disabled = state.historyIndex <= 0;
+        dom.btnRedo.disabled = state.historyIndex >= state.history.length - 1;
+      }
+
+      function getSelectedWidget() {
+        if (!state.selectedId) return null;
+        return state.widgets.find(w => w.id === state.selectedId) || null;
+      }
+
+      /* ======================================================================
+         4. TOOLBOX RENDERING & DRAG-AND-DROP INITIATION
+         ====================================================================== */
+      function renderToolbox(filterText = '') {
+        const query = filterText.trim().toLowerCase();
+        const categories = ['Containers', 'Basic & Inputs', 'Data & Indicators', 'Classic tk Widgets'];
+        dom.toolboxList.innerHTML = '';
+
+        categories.forEach(cat => {
+          const items = WIDGET_CATALOG.filter(item =>
+            item.category === cat &&
+            (item.label.toLowerCase().includes(query) || item.type.toLowerCase().includes(query))
+          );
+
+          if (items.length === 0) return;
+
+          const catDiv = document.createElement('div');
+          catDiv.className = 'toolbox-category';
+
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'toolbox-cat-title';
+          titleDiv.innerHTML = `<span>${cat}</span><span>${items.length}</span>`;
+          catDiv.appendChild(titleDiv);
+
+          const gridDiv = document.createElement('div');
+          gridDiv.className = 'toolbox-grid';
+
+          items.forEach(item => {
+            const el = document.createElement('div');
+            el.className = `tool-item ${item.isTtk ? '' : 'tk-classic'}`;
+            el.draggable = true;
+            el.title = `Drag onto form or click to add ${item.type}`;
+            el.innerHTML = `
+              <div class="tool-icon">${item.icon}</div>
+              <span class="tool-label">${item.label}</span>
+            `;
+
+            // Drag start from toolbox
+            el.addEventListener('dragstart', e => {
+              e.dataTransfer.setData('text/plain', item.type);
+              e.dataTransfer.effectAllowed = 'copy';
+            });
+
+            // Click-to-add convenience
+            el.addEventListener('click', () => {
+              const offset = (state.widgets.length % 8) * 15;
+              createWidgetAt(item.type, snapVal(30 + offset), snapVal(30 + offset));
+            });
+
+            gridDiv.appendChild(el);
+          });
+
+          catDiv.appendChild(gridDiv);
+          dom.toolboxList.appendChild(catDiv);
+        });
+      }
+
+      /* ======================================================================
+         5. WIDGET CREATION, SELECTION, DELETION & DUPLICATION
+         ====================================================================== */
+      function createWidgetAt(type, x, y, forcedParentId = null) {
+        const meta = WIDGET_CATALOG.find(m => m.type === type);
+        if (!meta) return;
+
+        const id = 'w_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        const varName = generateUniqueVarName(type);
+        // Check if dropped inside a container (Frame, LabelFrame, Notebook) if not forced
+        let parentId = forcedParentId;
+        let relX = x;
+        let relY = y;
+
+        if (!parentId) {
+          const containers = state.widgets.filter(w => ['ttk.Frame', 'ttk.LabelFrame', 'ttk.Notebook'].includes(w.type));
+          for (let i = containers.length - 1; i >= 0; i--) {
+            const c = containers[i];
+            let cAbsX = c.x;
+            let cAbsY = c.y;
+            if (c.parentId) {
+              const cp = state.widgets.find(pw => pw.id === c.parentId);
+              if (cp) { cAbsX += cp.x; cAbsY += cp.y; }
+            }
+            if (x >= cAbsX && x <= cAbsX + c.width && y >= cAbsY && y <= cAbsY + c.height) {
+              parentId = c.id;
+              relX = x - cAbsX;
+              relY = y - cAbsY;
+              if (c.type === 'ttk.LabelFrame') relY -= 15;
+              if (c.type === 'ttk.Notebook') relY -= 25;
+              break;
+            }
+          }
+        }
+
+        const w = Math.max(10, meta.defaultSize.width);
+        const h = Math.max(8, meta.defaultSize.height);
+        const parentObj = parentId ? state.widgets.find(pw => pw.id === parentId) : null;
+        const parentWidth = parentObj ? parentObj.width : state.window.width;
+        const parentHeight = parentObj ? (parentObj.height - (parentObj.type === 'ttk.LabelFrame' ? 15 : parentObj.type === 'ttk.Notebook' ? 25 : 0)) : state.window.height;
+
+        const clampedX = Math.max(0, Math.min(Math.max(0, parentWidth - w), snapVal(relX)));
+        const clampedY = Math.max(0, Math.min(Math.max(0, parentHeight - h), snapVal(relY)));
+
+        const widget = {
+          id,
+          type: meta.type,
+          isTtk: meta.isTtk,
+          parentId: parentId || null,
+          variable_name: varName,
+          x: clampedX,
+          y: clampedY,
+          width: w,
+          height: h,
+          props: JSON.parse(JSON.stringify(meta.defaults))
+        };
+
+        state.widgets.push(widget);
+        state.selectedId = widget.id;
+        pushHistory();
+        renderAll();
+      }
+
+      function selectWidget(id) {
+        state.selectedId = id;
+        renderCanvasSelection();
+        renderHierarchy();
+        renderInspector();
+        updateHud();
+      }
+
+      function deleteWidget(id) {
+        const idx = state.widgets.findIndex(w => w.id === id);
+        if (idx === -1) return;
+        state.widgets.splice(idx, 1);
+        if (state.selectedId === id) {
+          state.selectedId = state.widgets.length ? state.widgets[state.widgets.length - 1].id : null;
+        }
+        pushHistory();
+        renderAll();
+      }
+
+      function duplicateSelectedWidget() {
+        const w = getSelectedWidget();
+        if (!w) return;
+        const copy = JSON.parse(JSON.stringify(w));
+        copy.id = 'w_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        copy.variable_name = generateUniqueVarName(w.type);
+        copy.x = Math.min(state.window.width - copy.width, copy.x + 20);
+        copy.y = Math.min(state.window.height - copy.height, copy.y + 20);
+        state.widgets.push(copy);
+        state.selectedId = copy.id;
+        pushHistory();
+        renderAll();
+        showToast(`Duplicated as ${copy.variable_name}`);
+      }
+
+      /* ======================================================================
+         6. RENDERING WYSIWYG CANVAS & AUTHENTIC WIDGET PREVIEWS
+         ====================================================================== */
+      function renderWindowFrame() {
+        dom.tkWindowTitleText.textContent = state.window.title;
+        dom.tkWindowFrame.style.width = state.window.width + 'px';
+        dom.tkCanvasSurface.style.width = state.window.width + 'px';
+        dom.tkCanvasSurface.style.height = state.window.height + 'px';
+        dom.tkCanvasSurface.style.backgroundColor = state.window.background;
+
+        if (state.grid.enabled) {
+          dom.tkCanvasSurface.classList.add('show-grid');
+          dom.tkCanvasSurface.style.backgroundSize = `${state.grid.size}px ${state.grid.size}px`;
+        } else {
+          dom.tkCanvasSurface.classList.remove('show-grid');
+        }
+      }
+
+      function renderCanvasWidgets() {
+        dom.tkCanvasSurface.innerHTML = '';
+
+        // Sort widgets so containers are rendered before children
+        const sortedWidgets = [];
+        const visited = new Set();
+        const addWidgetAndChildren = (w) => {
+          if (visited.has(w.id)) return;
+          visited.add(w.id);
+          sortedWidgets.push(w);
+          state.widgets.filter(child => child.parentId === w.id).forEach(child => addWidgetAndChildren(child));
+        };
+        state.widgets.filter(w => !w.parentId).forEach(w => addWidgetAndChildren(w));
+        state.widgets.forEach(w => {
+          if (!visited.has(w.id)) addWidgetAndChildren(w);
+        });
+
+        sortedWidgets.forEach(w => {
+          const isContainer = ['ttk.Frame', 'ttk.LabelFrame', 'ttk.Notebook', 'ttk.PanedWindow'].includes(w.type);
+          const el = document.createElement('div');
+          el.className = `canvas-widget ${isContainer ? 'is-container' : ''} ${w.id === state.selectedId ? 'selected' : ''}`;
+          el.dataset.id = w.id;
+
+          let absX = w.x;
+          let absY = w.y;
+          if (w.parentId) {
+            const parent = state.widgets.find(pw => pw.id === w.parentId);
+            if (parent) {
+              let pAbsX = parent.x;
+              let pAbsY = parent.y;
+              if (parent.type === 'ttk.LabelFrame') pAbsY += 15;
+              if (parent.type === 'ttk.Notebook') pAbsY += 25;
+              absX = pAbsX + w.x;
+              absY = pAbsY + w.y;
+            }
+          }
+
+          el.style.left = Math.max(0, absX) + 'px';
+          el.style.top = Math.max(0, absY) + 'px';
+          el.style.width = Math.max(10, w.width) + 'px';
+          el.style.height = Math.max(8, w.height) + 'px';
+
+          el.innerHTML = buildWidgetVisualHTML(w) + `
+            <div class="resize-handle nw" data-dir="nw"></div>
+            <div class="resize-handle n"  data-dir="n"></div>
+            <div class="resize-handle ne" data-dir="ne"></div>
+            <div class="resize-handle e"  data-dir="e"></div>
+            <div class="resize-handle se" data-dir="se"></div>
+            <div class="resize-handle s"  data-dir="s"></div>
+            <div class="resize-handle sw" data-dir="sw"></div>
+            <div class="resize-handle w"  data-dir="w"></div>
+          `;
+
+          el.addEventListener('mousedown', e => {
+            e.stopPropagation();
+            selectWidget(w.id);
+
+            const handle = e.target.closest('.resize-handle');
+            if (handle) {
+              startResizeInteraction(e, w, handle.dataset.dir);
+            } else {
+              startMoveInteraction(e, w);
+            }
+          });
+
+          dom.tkCanvasSurface.appendChild(el);
+        });
+      }
+
+      function buildWidgetVisualHTML(w) {
+        const p = w.props || {};
+        const fontStyle = p.fontFamily
+          ? `font-family:'${escapeAttr(p.fontFamily)}',sans-serif; font-size:${p.fontSize || 10}pt; font-weight:${p.fontWeight || 'normal'};`
+          : `font-size:10pt;`;
+        const fgStyle = p.foreground ? `color:${escapeAttr(p.foreground)};` : '';
+        const bgStyle = p.background ? `background-color:${escapeAttr(p.background)};` : '';
+        const alignMap = { left: 'flex-start', center: 'center', right: 'flex-end' };
+        const justifyStyle = p.justify ? `justify-content:${alignMap[p.justify] || 'flex-start'}; text-align:${escapeAttr(p.justify)};` : '';
+
+        switch (w.type) {
+          case 'ttk.Frame':
+            return `<div class="w-inner ttk-frame" style="border-style:${escapeAttr(p.relief || 'groove')}; border-width:${p.borderwidth ?? 1}px;"></div>`;
+
+          case 'ttk.LabelFrame':
+            return `
+              <div class="w-inner ttk-labelframe" style="border-style:${escapeAttr(p.relief || 'groove')}; border-width:${p.borderwidth ?? 1}px;">
+                <span class="ttk-labelframe-title">${escapeHtml(p.text || 'Group Box')}</span>
+              </div>`;
+
+          case 'ttk.Notebook': {
+            const tabs = (p.tabs || 'Tab 1, Tab 2').split(',').map(s => s.trim()).filter(Boolean);
+            const tabHtml = tabs.map((t, idx) => `<div class="ttk-nb-tab ${idx === 0 ? 'active' : ''}">${escapeHtml(t)}</div>`).join('');
+            return `
+              <div class="w-inner ttk-notebook">
+                <div class="ttk-nb-tabs">${tabHtml}</div>
+                <div class="ttk-nb-pane"></div>
+              </div>`;
+          }
+
+          case 'ttk.PanedWindow': {
+            const isVert = p.orient === 'vertical';
+            return `
+              <div class="w-inner ttk-panedwindow ${isVert ? 'vertical' : ''}">
+                <div class="ttk-pw-pane">Pane 1</div>
+                <div class="${isVert ? 'ttk-pw-sash-v' : 'ttk-pw-sash-h'}"></div>
+                <div class="ttk-pw-pane">Pane 2</div>
+              </div>`;
+          }
+
+          case 'ttk.Label':
+            return `<div class="w-inner ttk-label" style="${fontStyle} ${fgStyle} ${bgStyle} ${justifyStyle}">${escapeHtml(p.text ?? 'Label Text')}</div>`;
+
+          case 'ttk.Button':
+            return `<div class="w-inner ttk-button" style="${fontStyle} ${fgStyle}">${escapeHtml(p.text ?? 'Button')}</div>`;
+
+          case 'ttk.Checkbutton':
+            return `
+              <div class="w-inner ttk-checkradio" style="${fontStyle}">
+                <div class="ttk-checkbox-box ${p.checked ? 'checked' : ''}">${p.checked ? '✓' : ''}</div>
+                <span>${escapeHtml(p.text ?? 'Check Option')}</span>
+              </div>`;
+
+          case 'ttk.Radiobutton':
+            return `
+              <div class="w-inner ttk-checkradio" style="${fontStyle}">
+                <div class="ttk-radio-circle">${p.checked ? '<div class="ttk-radio-dot"></div>' : ''}</div>
+                <span>${escapeHtml(p.text ?? 'Radio Choice')}</span>
+              </div>`;
+
+          case 'ttk.Entry': {
+            const rawVal = p.value ? (p.show ? p.show.repeat(String(p.value).length) : p.value) : '';
+            const display = rawVal || `<span style="color:#94a3b8;">${escapeHtml(p.placeholder || '')}</span>`;
+            return `<div class="w-inner ttk-entry" style="${fontStyle} ${fgStyle} ${justifyStyle}">${display}</div>`;
+          }
+
+          case 'ttk.Combobox':
+            return `
+              <div class="w-inner ttk-combobox" style="${fontStyle}">
+                <span>${escapeHtml(p.value || '')}</span>
+                <div class="ttk-combo-arrow">▼</div>
+              </div>`;
+
+          case 'ttk.Spinbox':
+            return `
+              <div class="w-inner ttk-spinbox" style="${fontStyle}">
+                <span>${escapeHtml(String(p.value ?? 0))}</span>
+                <div class="ttk-spin-arrows">
+                  <div class="ttk-spin-btn">▲</div>
+                  <div class="ttk-spin-btn">▼</div>
+                </div>
+              </div>`;
+
+          case 'ttk.Scale': {
+            const min = Number(p.from_ ?? 0);
+            const max = Number(p.to ?? 100);
+            const val = Number(p.value ?? 50);
+            const pct = max > min ? Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100)) : 50;
+            if (p.orient === 'vertical') {
+              return `<div class="w-inner ttk-scale"><div class="ttk-scale-track-v"><div class="ttk-scale-thumb-v" style="top:${pct}%;"></div></div></div>`;
+            }
+            return `<div class="w-inner ttk-scale"><div class="ttk-scale-track-h"><div class="ttk-scale-thumb-h" style="left:${pct}%;"></div></div></div>`;
+          }
+
+          case 'ttk.Progressbar': {
+            const max = Number(p.maximum ?? 100);
+            const val = Number(p.value ?? 65);
+            const pct = max > 0 ? Math.max(0, Math.min(100, (val / max) * 100)) : 0;
+            if (p.orient === 'vertical') {
+              return `<div class="w-inner ttk-progressbar"><div class="ttk-progress-fill-v" style="height:${pct}%;"></div></div>`;
+            }
+            return `<div class="w-inner ttk-progressbar"><div class="ttk-progress-fill-h" style="width:${pct}%;"></div></div>`;
+          }
+
+          case 'ttk.Treeview': {
+            const cols = (p.columns || 'ID, Name, Role').split(',').map(s => s.trim()).filter(Boolean);
+            const headers = cols.map(c => `<div class="ttk-tv-col">${escapeHtml(c)}</div>`).join('');
+            return `
+              <div class="w-inner ttk-treeview">
+                <div class="ttk-tv-header">${headers}</div>
+                <div class="ttk-tv-body">Row 1 sample data...</div>
+              </div>`;
+          }
+
+          case 'ttk.Scrollbar': {
+            const isVert = p.orient !== 'horizontal';
+            return `
+              <div class="w-inner ttk-scrollbar ${isVert ? 'vertical' : ''}">
+                <div class="ttk-sb-arrow">${isVert ? '▲' : '◀'}</div>
+                <div class="ttk-sb-thumb"></div>
+                <div class="ttk-sb-arrow">${isVert ? '▼' : '▶'}</div>
+              </div>`;
+          }
+
+          case 'ttk.Separator':
+            return `<div class="w-inner"><div class="${p.orient === 'vertical' ? 'ttk-separator-v' : 'ttk-separator-h'}"></div></div>`;
+
+          case 'ttk.Sizegrip':
+            return `<div class="w-inner ttk-sizegrip"></div>`;
+
+          case 'tk.Text':
+            return `<div class="w-inner tk-text" style="${fontStyle} ${fgStyle} ${bgStyle}">${escapeHtml(p.text || '')}</div>`;
+
+          case 'tk.Listbox': {
+            const items = (p.values || 'Item 1, Item 2').split(',').map(s => s.trim()).filter(Boolean);
+            const rows = items.map(it => `<div class="tk-lb-item">${escapeHtml(it)}</div>`).join('');
+            return `<div class="w-inner tk-listbox" style="${fontStyle} ${fgStyle} ${bgStyle}">${rows}</div>`;
+          }
+
+          case 'tk.Canvas':
+            return `<div class="w-inner tk-canvas-box" style="${bgStyle}">tk.Canvas (${w.width}×${w.height})</div>`;
+
+          default:
+            return `<div class="w-inner ttk-frame">${escapeHtml(w.type)}</div>`;
+        }
+      }
+
+      function renderCanvasSelection() {
+        const nodes = dom.tkCanvasSurface.querySelectorAll('.canvas-widget');
+        nodes.forEach(node => {
+          node.classList.toggle('selected', node.dataset.id === state.selectedId);
+        });
+      }
+
+      /* ======================================================================
+         7. CANVAS DRAG-MOVE & 8-DIRECTIONAL RESIZE INTERACTIONS
+         ====================================================================== */
+      function startMoveInteraction(e, widget) {
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const origX = widget.x;
+        const origY = widget.y;
+        let moved = false;
+
+        const getDescendants = (containerId) => {
+          let list = [];
+          state.widgets.filter(w => w.parentId === containerId).forEach(child => {
+            list.push(child);
+            list = list.concat(getDescendants(child.id));
+          });
+          return list;
+        };
+        const children = getDescendants(widget.id);
+
+        function onMouseMove(ev) {
+          const dx = ev.clientX - startX;
+          const dy = ev.clientY - startY;
+          if (Math.abs(dx) > 1 || Math.abs(dy) > 1) moved = true;
+
+          let newX = snapVal(origX + dx);
+          let newY = snapVal(origY + dy);
+
+          if (widget.parentId) {
+            const parent = state.widgets.find(w => w.id === widget.parentId);
+            if (parent) {
+              newX = Math.max(0, Math.min(parent.width - widget.width, newX));
+              newY = Math.max(0, Math.min(parent.height - widget.height, newY));
+            }
+          } else {
+            newX = Math.max(0, Math.min(state.window.width - widget.width, newX));
+            newY = Math.max(0, Math.min(state.window.height - widget.height, newY));
+          }
+
+          const actualDx = newX - origX;
+          const actualDy = newY - origY;
+
+          widget.x = origX + actualDx;
+          widget.y = origY + actualDy;
+
+          const el = dom.tkCanvasSurface.querySelector(`.canvas-widget[data-id="${widget.id}"]`);
+          if (el) {
+            let absX = widget.x;
+            let absY = widget.y;
+            if (widget.parentId) {
+              const parent = state.widgets.find(pw => pw.id === widget.parentId);
+              if (parent) {
+                let pAbsX = parent.x;
+                let pAbsY = parent.y;
+                if (parent.type === 'ttk.LabelFrame') pAbsY += 15;
+                if (parent.type === 'ttk.Notebook') pAbsY += 25;
+                absX = pAbsX + widget.x;
+                absY = pAbsY + widget.y;
+              }
+            }
+            el.style.left = absX + 'px';
+            el.style.top = absY + 'px';
+          }
+
+          children.forEach(child => {
+            const childEl = dom.tkCanvasSurface.querySelector(`.canvas-widget[data-id="${child.id}"]`);
+            if (childEl) {
+              let parentAbsX = widget.x;
+              let parentAbsY = widget.y;
+              if (widget.type === 'ttk.LabelFrame') parentAbsY += 15;
+              if (widget.type === 'ttk.Notebook') parentAbsY += 25;
+              childEl.style.left = (parentAbsX + child.x) + 'px';
+              childEl.style.top = (parentAbsY + child.y) + 'px';
+            }
+          });
+
+          updateHud();
+        }
+
+        function onMouseUp() {
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+          if (moved) {
+            pushHistory();
+            renderInspector();
+          }
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      }
+
+      function startResizeInteraction(e, widget, dir) {
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const orig = { x: widget.x, y: widget.y, w: widget.width, h: widget.height };
+        let resized = false;
+        const minSize = 10;
+
+        function onMouseMove(ev) {
+          const dx = ev.clientX - startX;
+          const dy = ev.clientY - startY;
+          if (Math.abs(dx) > 1 || Math.abs(dy) > 1) resized = true;
+
+          let { x, y, w, h } = orig;
+
+          if (dir.includes('e')) {
+            w = Math.max(minSize, snapVal(orig.w + dx));
+            if (x + w > state.window.width) w = state.window.width - x;
+          }
+          if (dir.includes('s')) {
+            h = Math.max(minSize, snapVal(orig.h + dy));
+            if (y + h > state.window.height) h = state.window.height - y;
+          }
+          if (dir.includes('w')) {
+            const newX = Math.max(0, Math.min(orig.x + orig.w - minSize, snapVal(orig.x + dx)));
+            w = orig.w + (orig.x - newX);
+            x = newX;
+          }
+          if (dir.includes('n')) {
+            const newY = Math.max(0, Math.min(orig.y + orig.h - minSize, snapVal(orig.y + dy)));
+            h = orig.h + (orig.y - newY);
+            y = newY;
+          }
+
+          widget.x = x;
+          widget.y = y;
+          widget.width = w;
+          widget.height = h;
+
+          const el = dom.tkCanvasSurface.querySelector(`.canvas-widget[data-id="${widget.id}"]`);
+          if (el) {
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.style.width = w + 'px';
+            el.style.height = h + 'px';
+            if (widget.type === 'tk.Canvas') {
+              el.innerHTML = buildWidgetVisualHTML(widget) + el.innerHTML.slice(el.innerHTML.indexOf('<div class="resize-handle'));
+            }
+          }
+          updateHud();
+        }
+
+        function onMouseUp() {
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+          if (resized) {
+            pushHistory();
+            renderInspector();
+          }
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      }
+
+      /* ======================================================================
+         8. HIERARCHY TREE & PROPERTIES INSPECTOR
+         ====================================================================== */
+      function renderHierarchy() {
+        dom.widgetCountBadge.textContent = state.widgets.length;
+        dom.hierarchyList.innerHTML = '';
+
+        // Root Window Node
+        const rootNode = document.createElement('div');
+        rootNode.className = `tree-node ${state.selectedId === null ? 'active' : ''}`;
+        rootNode.innerHTML = `
+          <div class="tree-node-left">
+            <span>🖥</span>
+            <span>root (${escapeHtml(state.window.title)})</span>
+          </div>
+          <span class="tree-node-tag">tk.Tk</span>
+        `;
+        rootNode.addEventListener('click', () => selectWidget(null));
+        dom.hierarchyList.appendChild(rootNode);
+
+        // Child Widgets
+        state.widgets.forEach(w => {
+          const item = document.createElement('div');
+          item.className = `tree-node ${state.selectedId === w.id ? 'active' : ''}`;
+          item.innerHTML = `
+            <div class="tree-node-left">
+              <span style="color:var(--text-muted);">└</span>
+              <span>${escapeHtml(w.variable_name)}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span class="tree-node-tag">${w.type}</span>
+              <button class="tree-node-del" title="Delete Widget">✕</button>
+            </div>
+          `;
+          item.addEventListener('click', () => selectWidget(w.id));
+          item.querySelector('.tree-node-del').addEventListener('click', e => {
+            e.stopPropagation();
+            deleteWidget(w.id);
+          });
+          dom.hierarchyList.appendChild(item);
+        });
+      }
+
+      function renderInspector() {
+        const w = getSelectedWidget();
+        dom.inspectorBody.innerHTML = '';
+
+        if (!w) {
+          // ROOT WINDOW INSPECTOR
+          dom.inspectorTargetType.textContent = 'tk.Tk (Root)';
+          dom.inspectorBody.innerHTML = `
+            <div class="prop-group">
+              <div class="prop-group-title">Root Window Settings</div>
+              <div class="prop-row">
+                <label class="prop-label">title</label>
+                <input type="text" class="prop-input" id="winPropTitle" value="${escapeAttr(state.window.title)}" />
+              </div>
+              <div class="prop-row">
+                <label class="prop-label">geometry</label>
+                <div class="prop-grid-2">
+                  <div class="mini-field"><span>W</span><input type="number" class="prop-input" id="winPropW" value="${state.window.width}" min="150" max="1920" /></div>
+                  <div class="mini-field"><span>H</span><input type="number" class="prop-input" id="winPropH" value="${state.window.height}" min="120" max="1200" /></div>
+                </div>
+              </div>
+              <div class="prop-row">
+                <label class="prop-label">background</label>
+                <div class="prop-color-wrap">
+                  <input type="color" class="prop-color-picker" id="winPropBgPicker" value="${state.window.background}" />
+                  <input type="text" class="prop-input" id="winPropBgText" value="${state.window.background}" />
+                </div>
+              </div>
+              <div class="prop-row">
+                <label class="prop-label">ttk.Style theme</label>
+                <select class="prop-select" id="winPropTheme">
+                  <option value="clam" ${state.window.theme === 'clam' ? 'selected' : ''}>clam (Modern Cross-Platform)</option>
+                  <option value="vista" ${state.window.theme === 'vista' ? 'selected' : ''}>vista (Windows Native)</option>
+                  <option value="aqua" ${state.window.theme === 'aqua' ? 'selected' : ''}>aqua (macOS Native)</option>
+                  <option value="alt" ${state.window.theme === 'alt' ? 'selected' : ''}>alt</option>
+                  <option value="default" ${state.window.theme === 'default' ? 'selected' : ''}>default</option>
+                </select>
+              </div>
+              <div class="prop-row">
+                <label class="prop-label">resizable</label>
+                <input type="checkbox" class="prop-checkbox" id="winPropResizable" ${state.window.resizable ? 'checked' : ''} />
+              </div>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); line-height:1.5; padding:4px;">
+              💡 <strong>Tip:</strong> Drag any widget from the left toolbox onto the form canvas or into a container.
+            </div>
+          `;
+
+          document.getElementById('winPropTitle').addEventListener('input', e => {
+            state.window.title = e.target.value;
+            renderWindowFrame();
+            renderHierarchy();
+          });
+          document.getElementById('winPropTitle').addEventListener('change', pushHistory);
+
+          document.getElementById('winPropW').addEventListener('change', e => {
+            state.window.width = Math.max(150, parseInt(e.target.value, 10) || 640);
+            dom.presetSizeSelect.value = 'custom';
+            renderWindowFrame();
+            updateHud();
+            pushHistory();
+          });
+
+          document.getElementById('winPropH').addEventListener('change', e => {
+            state.window.height = Math.max(120, parseInt(e.target.value, 10) || 480);
+            dom.presetSizeSelect.value = 'custom';
+            renderWindowFrame();
+            updateHud();
+            pushHistory();
+          });
+
+          const bgPicker = document.getElementById('winPropBgPicker');
+          const bgText = document.getElementById('winPropBgText');
+          bgPicker.addEventListener('input', e => {
+            state.window.background = e.target.value;
+            bgText.value = e.target.value;
+            renderWindowFrame();
+            renderCanvasWidgets();
+          });
+          bgPicker.addEventListener('change', pushHistory);
+          bgText.addEventListener('change', e => {
+            state.window.background = e.target.value;
+            bgPicker.value = e.target.value;
+            renderWindowFrame();
+            renderCanvasWidgets();
+            pushHistory();
+          });
+
+          document.getElementById('winPropTheme').addEventListener('change', e => {
+            state.window.theme = e.target.value;
+            pushHistory();
+          });
+
+          document.getElementById('winPropResizable').addEventListener('change', e => {
+            state.window.resizable = e.target.checked;
+            pushHistory();
+          });
+          return;
+        }
+
+        // SELECTED WIDGET INSPECTOR
+        dom.inspectorTargetType.textContent = w.type;
+        const p = w.props;
+        let html = '';
+
+        // Container / Parent Selector Group
+        html += `
+          <div class="prop-group">
+            <div class="prop-group-title">Container &amp; Parent</div>
+            <div class="prop-row">
+              <label class="prop-label">parent</label>
+              <select class="prop-select" data-root="parentId">
+                <option value="">(Root Form Canvas)</option>
+                ${state.widgets.filter(pw => ['ttk.Frame', 'ttk.LabelFrame', 'ttk.Notebook'].includes(pw.type) && pw.id !== w.id).map(pw => `
+                  <option value="${pw.id}" ${w.parentId === pw.id ? 'selected' : ''}>${pw.variable_name} (${pw.type})</option>
+                `).join('')}
+              </select>
+            </div>
+          </div>
+        `;
+
+        // 1. Common & Geometry Group
+        html += `
+          <div class="prop-group">
+            <div class="prop-group-title">Identifier &amp; Geometry (.place)</div>
+            <div class="prop-row">
+              <label class="prop-label">variable_name</label>
+              <input type="text" class="prop-input" data-root="variable_name" value="${escapeAttr(w.variable_name)}" />
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">position (x, y)</label>
+              <div class="prop-grid-2">
+                <div class="mini-field"><span>X</span><input type="number" class="prop-input" data-root="x" value="${w.x}" /></div>
+                <div class="mini-field"><span>Y</span><input type="number" class="prop-input" data-root="y" value="${w.y}" /></div>
+              </div>
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">size (w, h)</label>
+              <div class="prop-grid-2">
+                <div class="mini-field"><span>W</span><input type="number" class="prop-input" data-root="width" value="${w.width}" min="8" /></div>
+                <div class="mini-field"><span>H</span><input type="number" class="prop-input" data-root="height" value="${w.height}" min="6" /></div>
+              </div>
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">cursor</label>
+              <select class="prop-select" data-prop="cursor">
+                <option value="" ${!p.cursor ? 'selected' : ''}>default</option>
+                <option value="hand2" ${p.cursor === 'hand2' ? 'selected' : ''}>hand2 (pointer)</option>
+                <option value="xterm" ${p.cursor === 'xterm' ? 'selected' : ''}>xterm (text)</option>
+                <option value="crosshair" ${p.cursor === 'crosshair' ? 'selected' : ''}>crosshair</option>
+                <option value="watch" ${p.cursor === 'watch' ? 'selected' : ''}>watch (wait)</option>
+              </select>
+            </div>
+            <div class="prop-row">
+              <label class="prop-label">takefocus</label>
+              <input type="checkbox" class="prop-checkbox" data-prop="takefocus" ${p.takefocus ? 'checked' : ''} />
+            </div>
+          </div>
+        `;
+
+        // 2. Appearance & Text Group (Contextual)
+        const hasText = 'text' in p;
+        const hasFont = 'fontFamily' in p;
+        const hasFg = 'foreground' in p;
+        const hasBg = 'background' in p;
+        const hasJustify = 'justify' in p;
+        const hasAnchor = 'anchor' in p;
+        const hasRelief = 'relief' in p;
+
+        if (hasText || hasFont || hasFg || hasBg || hasJustify || hasRelief) {
+          html += `<div class="prop-group"><div class="prop-group-title">Appearance &amp; Typography</div>`;
+          if (hasText) {
+            html += `
+              <div class="prop-row">
+                <label class="prop-label">text</label>
+                <input type="text" class="prop-input" data-prop="text" value="${escapeAttr(p.text)}" />
+              </div>`;
+          }
+          if (hasFont) {
+            html += `
+              <div class="prop-row">
+                <label class="prop-label">font</label>
+                <div class="prop-grid-2">
+                  <select class="prop-select" data-prop="fontFamily">
+                    <option value="Segoe UI" ${p.fontFamily === 'Segoe UI' ? 'selected' : ''}>Segoe UI</option>
+                    <option value="Arial" ${p.fontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
+                    <option value="Consolas" ${p.fontFamily === 'Consolas' ? 'selected' : ''}>Consolas</option>
+                    <option value="Helvetica" ${p.fontFamily === 'Helvetica' ? 'selected' : ''}>Helvetica</option>
+                    <option value="Times New Roman" ${p.fontFamily === 'Times New Roman' ? 'selected' : ''}>Times</option>
+                  </select>
+                  <input type="number" class="prop-input" data-prop="fontSize" value="${p.fontSize || 10}" min="6" max="72" title="Font Size (pt)" />
+                </div>
+              </div>
+              <div class="prop-row">
+                <label class="prop-label">weight</label>
+                <select class="prop-select" data-prop="fontWeight">
+                  <option value="normal" ${p.fontWeight === 'normal' ? 'selected' : ''}>normal</option>
+                  <option value="bold" ${p.fontWeight === 'bold' ? 'selected' : ''}>bold</option>
+                </select>
+              </div>`;
+          }
+          if (hasFg) {
+            html += `
+              <div class="prop-row">
+                <label class="prop-label">foreground</label>
+                <div class="prop-color-wrap">
+                  <input type="color" class="prop-color-picker" data-prop="foreground" value="${p.foreground || '#000000'}" />
+                  <input type="text" class="prop-input" data-prop="foreground" value="${p.foreground || '#000000'}" />
+                </div>
+              </div>`;
+          }
+          if (hasBg) {
+            html += `
+              <div class="prop-row">
+                <label class="prop-label">background</label>
+                <div class="prop-color-wrap">
+                  <input type="color" class="prop-color-picker" data-prop="background" value="${p.background || '#ffffff'}" />
+                  <input type="text" class="prop-input" data-prop="background" value="${p.background || '#ffffff'}" />
+                </div>
+              </div>`;
+          }
+          if (hasJustify) {
+            html += `
+              <div class="prop-row">
+                <label class="prop-label">justify</label>
+                <select class="prop-select" data-prop="justify">
+                  <option value="left" ${p.justify === 'left' ? 'selected' : ''}>left</option>
+                  <option value="center" ${p.justify === 'center' ? 'selected' : ''}>center</option>
+                  <option value="right" ${p.justify === 'right' ? 'selected' : ''}>right</option>
+                </select>
+              </div>`;
+          }
+          if (hasAnchor) {
+            html += `
+              <div class="prop-row">
+                <label class="prop-label">anchor</label>
+                <select class="prop-select" data-prop="anchor">
+                  <option value="w" ${p.anchor === 'w' ? 'selected' : ''}>w (west / left)</option>
+                  <option value="center" ${p.anchor === 'center' ? 'selected' : ''}>center</option>
+                  <option value="e" ${p.anchor === 'e' ? 'selected' : ''}>e (east / right)</option>
+                  <option value="nw" ${p.anchor === 'nw' ? 'selected' : ''}>nw</option>
+                  <option value="ne" ${p.anchor === 'ne' ? 'selected' : ''}>ne</option>
+                </select>
+              </div>`;
+          }
+          if (hasRelief) {
+            html += `
+              <div class="prop-row">
+                <label class="prop-label">relief / bw</label>
+                <div class="prop-grid-2">
+                  <select class="prop-select" data-prop="relief">
+                    <option value="flat" ${p.relief === 'flat' ? 'selected' : ''}>flat</option>
+                    <option value="groove" ${p.relief === 'groove' ? 'selected' : ''}>groove</option>
+                    <option value="raised" ${p.relief === 'raised' ? 'selected' : ''}>raised</option>
+                    <option value="sunken" ${p.relief === 'sunken' ? 'selected' : ''}>sunken</option>
+                    <option value="ridge" ${p.relief === 'ridge' ? 'selected' : ''}>ridge</option>
+                    <option value="solid" ${p.relief === 'solid' ? 'selected' : ''}>solid</option>
+                  </select>
+                  <input type="number" class="prop-input" data-prop="borderwidth" value="${p.borderwidth ?? 1}" min="0" max="10" />
+                </div>
+              </div>`;
+          }
+          html += `</div>`;
+        }
+
+        // 3. Widget-Specific & Data Binding Group
+        html += `<div class="prop-group"><div class="prop-group-title">Behavior &amp; Widget Options</div>`;
+
+        if ('state' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">state</label>
+              <select class="prop-select" data-prop="state">
+                <option value="normal" ${p.state === 'normal' ? 'selected' : ''}>normal</option>
+                <option value="disabled" ${p.state === 'disabled' ? 'selected' : ''}>disabled</option>
+                <option value="readonly" ${p.state === 'readonly' ? 'selected' : ''}>readonly</option>
+              </select>
+            </div>`;
+        }
+
+        if ('command' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">command</label>
+              <input type="text" class="prop-input" data-prop="command" placeholder="e.g. on_submit" value="${escapeAttr(p.command)}" />
+            </div>`;
+        }
+
+        if ('textvariable' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">textvariable</label>
+              <input type="text" class="prop-input" data-prop="textvariable" placeholder="e.g. username_var" value="${escapeAttr(p.textvariable)}" />
+            </div>`;
+        }
+
+        if ('variable' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">variable</label>
+              <input type="text" class="prop-input" data-prop="variable" placeholder="e.g. agree_var" value="${escapeAttr(p.variable)}" />
+            </div>`;
+        }
+
+        if ('placeholder' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">placeholder</label>
+              <input type="text" class="prop-input" data-prop="placeholder" value="${escapeAttr(p.placeholder)}" />
+            </div>`;
+        }
+
+        if ('show' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">show (mask)</label>
+              <input type="text" class="prop-input" data-prop="show" maxlength="1" placeholder="e.g. *" value="${escapeAttr(p.show)}" />
+            </div>`;
+        }
+
+        if ('from_' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">range (from/to)</label>
+              <div class="prop-grid-2">
+                <input type="number" class="prop-input" data-prop="from_" value="${p.from_}" />
+                <input type="number" class="prop-input" data-prop="to" value="${p.to}" />
+              </div>
+            </div>`;
+        }
+
+        if ('maximum' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">maximum</label>
+              <input type="number" class="prop-input" data-prop="maximum" value="${p.maximum}" min="1" />
+            </div>`;
+        }
+
+        if ('value' in p) {
+          const inputType = typeof p.value === 'number' ? 'number' : 'text';
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">value</label>
+              <input type="${inputType}" class="prop-input" data-prop="value" value="${escapeAttr(String(p.value))}" />
+            </div>`;
+        }
+
+        if ('onvalue' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">on / off value</label>
+              <div class="prop-grid-2">
+                <input type="text" class="prop-input" data-prop="onvalue" value="${escapeAttr(p.onvalue)}" />
+                <input type="text" class="prop-input" data-prop="offvalue" value="${escapeAttr(p.offvalue)}" />
+              </div>
+            </div>`;
+        }
+
+        if ('checked' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">checked</label>
+              <input type="checkbox" class="prop-checkbox" data-prop="checked" ${p.checked ? 'checked' : ''} />
+            </div>`;
+        }
+
+        if ('orient' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">orient</label>
+              <select class="prop-select" data-prop="orient">
+                <option value="horizontal" ${p.orient === 'horizontal' ? 'selected' : ''}>horizontal</option>
+                <option value="vertical" ${p.orient === 'vertical' ? 'selected' : ''}>vertical</option>
+              </select>
+            </div>`;
+        }
+
+        if ('mode' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">mode</label>
+              <select class="prop-select" data-prop="mode">
+                <option value="determinate" ${p.mode === 'determinate' ? 'selected' : ''}>determinate</option>
+                <option value="indeterminate" ${p.mode === 'indeterminate' ? 'selected' : ''}>indeterminate</option>
+              </select>
+            </div>`;
+        }
+
+        if ('values' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">values (CSV)</label>
+              <input type="text" class="prop-input" data-prop="values" value="${escapeAttr(p.values)}" />
+            </div>`;
+        }
+
+        if ('columns' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">columns (CSV)</label>
+              <input type="text" class="prop-input" data-prop="columns" value="${escapeAttr(p.columns)}" />
+            </div>`;
+        }
+
+        if ('tabs' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">tabs (CSV)</label>
+              <input type="text" class="prop-input" data-prop="tabs" value="${escapeAttr(p.tabs)}" />
+            </div>`;
+        }
+
+        if ('wrap' in p) {
+          html += `
+            <div class="prop-row">
+              <label class="prop-label">wrap</label>
+              <select class="prop-select" data-prop="wrap">
+                <option value="word" ${p.wrap === 'word' ? 'selected' : ''}>word</option>
+                <option value="char" ${p.wrap === 'char' ? 'selected' : ''}>char</option>
+                <option value="none" ${p.wrap === 'none' ? 'selected' : ''}>none</option>
+              </select>
+            </div>`;
+        }
+
+        html += `</div>`;
+
+        // Quick Action Buttons in Inspector
+        html += `
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <button id="inspBtnDuplicate" class="tb-btn" style="flex:1; justify-content:center;">⧉ Duplicate</button>
+            <button id="inspBtnDelete" class="tb-btn danger" style="flex:1; justify-content:center;">🗑 Delete</button>
+          </div>
+        `;
+
+        dom.inspectorBody.innerHTML = html;
+
+        // Wire up all generated inspector inputs
+        dom.inspectorBody.querySelectorAll('[data-root]').forEach(input => {
+          const key = input.dataset.root;
+          input.addEventListener('change', e => {
+            if (key === 'variable_name') {
+              const sanitized = sanitizePythonIdentifier(e.target.value, w.variable_name);
+              const duplicate = state.widgets.some(other => other.id !== w.id && other.variable_name === sanitized);
+              if (duplicate) {
+                showToast(`Variable "${sanitized}" already exists!`);
+                e.target.value = w.variable_name;
+                return;
+              }
+              w.variable_name = sanitized;
+              e.target.value = sanitized;
+              renderHierarchy();
+              updateHud();
+            } else if (key === 'parentId') {
+              w.parentId = e.target.value || null;
+              renderAll();
+            } else {
+              let num = parseInt(e.target.value, 10) || 0;
+              if (key === 'width' || key === 'height') num = Math.max(8, num);
+              w[key] = num;
+              renderCanvasWidgets();
+              updateHud();
+            }
+            pushHistory();
+          });
+        });
+
+        dom.inspectorBody.querySelectorAll('[data-prop]').forEach(input => {
+          const propKey = input.dataset.prop;
+          const eventType = (input.type === 'checkbox' || input.tagName === 'SELECT') ? 'change' : 'input';
+
+          input.addEventListener(eventType, e => {
+            let val;
+            if (input.type === 'checkbox') {
+              val = input.checked;
+            } else if (input.type === 'number') {
+              val = parseFloat(e.target.value) || 0;
+            } else {
+              val = e.target.value;
+            }
+
+            if (propKey === 'command' && val) {
+              val = sanitizePythonIdentifier(val, '');
+            }
+
+            w.props[propKey] = val;
+
+            // Keep color picker & text input synchronized
+            if (propKey === 'foreground' || propKey === 'background') {
+              dom.inspectorBody.querySelectorAll(`[data-prop="${propKey}"]`).forEach(sibling => {
+                if (sibling !== input) sibling.value = val;
+              });
+            }
+
+            // Auto-swap dimensions if orientation flips on Separator/Scrollbar/Scale/Progressbar
+            if (propKey === 'orient') {
+              const oldW = w.width;
+              w.width = w.height;
+              w.height = oldW;
+            }
+
+            renderCanvasWidgets();
+            updateHud();
+          });
+
+          if (eventType === 'input') {
+            input.addEventListener('change', pushHistory);
+          } else {
+            input.addEventListener('change', pushHistory);
+          }
+        });
+
+        document.getElementById('inspBtnDuplicate').addEventListener('click', duplicateSelectedWidget);
+        document.getElementById('inspBtnDelete').addEventListener('click', () => deleteWidget(w.id));
+      }
+
+      function updateHud() {
+        const w = getSelectedWidget();
+        if (!w) {
+          dom.hudSelected.textContent = 'Root Window';
+          dom.hudPos.textContent = '0, 0';
+          dom.hudSize.textContent = `${state.window.width} × ${state.window.height}`;
+        } else {
+          dom.hudSelected.textContent = `${w.variable_name} (${w.type})`;
+          dom.hudPos.textContent = `${w.x}, ${w.y}`;
+          dom.hudSize.textContent = `${w.width} × ${w.height}`;
+        }
+      }
+
+      function renderAll() {
+        renderWindowFrame();
+        renderCanvasWidgets();
+        renderHierarchy();
+        renderInspector();
+        updateHud();
+      }
+
+      /* ======================================================================
+         9. PYTHON CODE GENERATOR (CLEAN, RUNNABLE OOP TKINTER / TTK)
+         ====================================================================== */
+      function pyStr(str) {
+        return JSON.stringify(String(str ?? ''));
+      }
+
+      const TTK_BASE_STYLE_MAP = {
+        'ttk.Frame': 'TFrame',
+        'ttk.LabelFrame': 'TLabelframe',
+        'ttk.Notebook': 'TNotebook',
+        'ttk.PanedWindow': 'TPanedwindow',
+        'ttk.Label': 'TLabel',
+        'ttk.Button': 'TButton',
+        'ttk.Checkbutton': 'TCheckbutton',
+        'ttk.Radiobutton': 'TRadiobutton',
+        'ttk.Entry': 'TEntry',
+        'ttk.Combobox': 'TCombobox',
+        'ttk.Spinbox': 'TSpinbox',
+        'ttk.Scale': 'Horizontal.TScale',
+        'ttk.Progressbar': 'Horizontal.TProgressbar',
+        'ttk.Treeview': 'Treeview',
+        'ttk.Scrollbar': 'Vertical.TScrollbar',
+        'ttk.Separator': 'TSeparator',
+        'ttk.Sizegrip': 'TSizegrip'
+      };
+
+      const TTK_DIRECT_OPTIONS = {
+        'ttk.Label': new Set(['font', 'foreground', 'background', 'justify', 'anchor', 'relief', 'borderwidth']),
+        'ttk.Entry': new Set(['font', 'foreground', 'justify']),
+        'ttk.Combobox': new Set(['font', 'justify']),
+        'ttk.Spinbox': new Set(['font', 'justify']),
+        'ttk.Frame': new Set(['relief', 'borderwidth']),
+        'ttk.LabelFrame': new Set(['relief', 'borderwidth'])
+      };
+
+      function generatePythonCode() {
+        const lines = [];
+        const callbacks = new Set();
+        const varDeclarations = [];
+        const styleDeclarations = [];
+
+        lines.push(`"""`);
+        lines.push(`Generated by Tkinter Gui — Python Tkinter / ttk WYSIWYG Form Designer`);
+        lines.push(`Run: python tkinter_form.py`);
+        lines.push(`"""`);
+        lines.push(`import tkinter as tk`);
+        lines.push(`from tkinter import ttk`);
+        lines.push(``);
+        lines.push(``);
+        lines.push(`class Application(tk.Tk):`);
+        lines.push(`    def __init__(self):`);
+        lines.push(`        super().__init__()`);
+        lines.push(`        self.title(${pyStr(state.window.title)})`);
+        lines.push(`        self.geometry("${state.window.width}x${state.window.height}")`);
+        lines.push(`        self.configure(bg=${pyStr(state.window.background)})`);
+        if (!state.window.resizable) {
+          lines.push(`        self.resizable(False, False)`);
+        }
+        lines.push(``);
+        lines.push(`        # Configure ttk visual theme & custom widget styles`);
+        lines.push(`        self.style = ttk.Style(self)`);
+        lines.push(`        try:`);
+        lines.push(`            self.style.theme_use(${pyStr(state.window.theme)})`);
+        lines.push(`        except tk.TclError:`);
+        lines.push(`            pass`);
+        lines.push(``);
+        lines.push(`        self._init_styles()`);
+        lines.push(`        self._init_variables()`);
+        lines.push(`        self._build_ui()`);
+        lines.push(``);
+
+        // Sort widgets hierarchically so parent containers are created before their children
+        const sortedWidgets = [];
+        const visited = new Set();
+        const addWidgetAndChildren = (w) => {
+          if (visited.has(w.id)) return;
+          visited.add(w.id);
+          sortedWidgets.push(w);
+          state.widgets.filter(child => child.parentId === w.id).forEach(child => addWidgetAndChildren(child));
+        };
+        state.widgets.filter(w => !w.parentId).forEach(w => addWidgetAndChildren(w));
+        state.widgets.forEach(w => {
+          if (!visited.has(w.id)) addWidgetAndChildren(w);
+        });
+
+        const widgetCustomStyles = new Map();
+        const declaredVarNames = new Set();
+
+        sortedWidgets.forEach(w => {
+          const p = w.props;
+          if (p.textvariable) {
+            const vName = sanitizePythonIdentifier(p.textvariable);
+            if (!declaredVarNames.has(vName)) {
+              declaredVarNames.add(vName);
+              const initVal = p.value !== undefined ? pyStr(p.value) : pyStr(p.text || '');
+              varDeclarations.push(`        self.${vName} = tk.StringVar(value=${initVal})`);
+            }
+          }
+          if (p.variable) {
+            const vName = sanitizePythonIdentifier(p.variable);
+            if (!declaredVarNames.has(vName)) {
+              declaredVarNames.add(vName);
+              if (w.type === 'ttk.Checkbutton') {
+                varDeclarations.push(`        self.${vName} = tk.BooleanVar(value=${p.checked ? 'True' : 'False'})`);
+              } else if (w.type === 'ttk.Scale' || w.type === 'ttk.Progressbar') {
+                varDeclarations.push(`        self.${vName} = tk.DoubleVar(value=${Number(p.value ?? 0)})`);
+              } else {
+                const initVal = p.value !== undefined ? pyStr(p.value) : '""';
+                varDeclarations.push(`        self.${vName} = tk.StringVar(value=${initVal})`);
+              }
+            }
+          }
+          if (p.command) {
+            callbacks.add(sanitizePythonIdentifier(p.command));
+          }
+
+          if (w.isTtk) {
+            const directAllowed = TTK_DIRECT_OPTIONS[w.type] || new Set();
+            const styleOpts = [];
+
+            if ('fontFamily' in p && p.fontFamily && !directAllowed.has('font')) {
+              const isNonDefaultFont = p.fontFamily !== 'Segoe UI' || (p.fontSize && Number(p.fontSize) !== 10) || p.fontWeight === 'bold';
+              if (isNonDefaultFont) {
+                const weight = p.fontWeight === 'bold' ? ', "bold"' : '';
+                styleOpts.push(`font=(${pyStr(p.fontFamily)}, ${p.fontSize || 10}${weight})`);
+              }
+            }
+            if ('foreground' in p && p.foreground && p.foreground !== '#000000' && !directAllowed.has('foreground')) {
+              styleOpts.push(`foreground=${pyStr(p.foreground)}`);
+            }
+            if ('background' in p && p.background && p.background !== '#e5e5e5' && p.background !== '#f0f0f0' && !directAllowed.has('background')) {
+              styleOpts.push(`background=${pyStr(p.background)}`);
+            }
+
+            if (styleOpts.length > 0) {
+              let baseStyle = TTK_BASE_STYLE_MAP[w.type] || 'TFrame';
+              if (w.type === 'ttk.Scale') {
+                baseStyle = p.orient === 'vertical' ? 'Vertical.TScale' : 'Horizontal.TScale';
+              } else if (w.type === 'ttk.Progressbar') {
+                baseStyle = p.orient === 'vertical' ? 'Vertical.TProgressbar' : 'Horizontal.TProgressbar';
+              } else if (w.type === 'ttk.Scrollbar') {
+                baseStyle = p.orient === 'horizontal' ? 'Horizontal.TScrollbar' : 'Vertical.TScrollbar';
+              }
+              const customStyleName = `Custom_${w.variable_name}.${baseStyle}`;
+              widgetCustomStyles.set(w.id, customStyleName);
+              styleDeclarations.push(`        self.style.configure(${pyStr(customStyleName)}, ${styleOpts.join(', ')})`);
+            }
+          }
+        });
+
+        lines.push(`    def _init_styles(self):`);
+        if (styleDeclarations.length > 0) {
+          lines.push(...styleDeclarations);
+        } else {
+          lines.push(`        pass`);
+        }
+        lines.push(``);
+
+        lines.push(`    def _init_variables(self):`);
+        if (varDeclarations.length > 0) {
+          lines.push(...varDeclarations);
+        } else {
+          lines.push(`        pass`);
+        }
+        lines.push(``);
+
+        lines.push(`    def _build_ui(self):`);
+        if (sortedWidgets.length === 0) {
+          lines.push(`        pass`);
+        } else {
+          sortedWidgets.forEach(w => {
+            const p = w.props;
+            let master = 'self';
+            if (w.parentId) {
+              const parentW = state.widgets.find(pw => pw.id === w.parentId);
+              if (parentW) master = `self.${parentW.variable_name}`;
+            }
+
+            const args = [master];
+            const directAllowed = w.isTtk ? (TTK_DIRECT_OPTIONS[w.type] || new Set()) : null;
+
+            if (w.isTtk && widgetCustomStyles.has(w.id)) {
+              args.push(`style=${pyStr(widgetCustomStyles.get(w.id))}`);
+            }
+
+            if ('text' in p && w.type !== 'tk.Text' && p.text !== '') {
+              args.push(`text=${pyStr(p.text)}`);
+            }
+            if ('textvariable' in p && p.textvariable) {
+              args.push(`textvariable=self.${sanitizePythonIdentifier(p.textvariable)}`);
+            }
+            if ('variable' in p && p.variable) {
+              args.push(`variable=self.${sanitizePythonIdentifier(p.variable)}`);
+            }
+            if (w.type === 'ttk.Checkbutton') {
+              if (p.onvalue !== undefined) args.push(`onvalue=${pyStr(p.onvalue)}`);
+              if (p.offvalue !== undefined) args.push(`offvalue=${pyStr(p.offvalue)}`);
+            }
+            if (w.type === 'ttk.Radiobutton' && p.value !== undefined) {
+              args.push(`value=${pyStr(p.value)}`);
+            }
+            if (w.type === 'ttk.Entry' && p.show) {
+              args.push(`show=${pyStr(p.show)}`);
+            }
+            if (w.type === 'ttk.Combobox' && p.values) {
+              const vals = p.values.split(',').map(s => s.trim()).filter(Boolean).map(pyStr).join(', ');
+              args.push(`values=[${vals}]`);
+            }
+            if ((w.type === 'ttk.Scale' || w.type === 'ttk.Spinbox') && 'from_' in p) {
+              args.push(`from_=${Number(p.from_)}`);
+              args.push(`to=${Number(p.to)}`);
+            }
+            if (w.type === 'ttk.Progressbar') {
+              if (p.maximum !== undefined) {
+                args.push(`maximum=${Number(p.maximum)}`);
+              }
+              if (p.value !== undefined && !p.variable) {
+                args.push(`value=${Number(p.value)}`);
+              }
+            }
+            if ('orient' in p) {
+              args.push(`orient=${pyStr(p.orient)}`);
+            }
+            if (w.type === 'ttk.Progressbar' && p.mode) {
+              args.push(`mode=${pyStr(p.mode)}`);
+            }
+            if (w.type === 'ttk.Treeview' && p.columns) {
+              const cols = p.columns.split(',').map(s => s.trim()).filter(Boolean).map(pyStr).join(', ');
+              args.push(`columns=(${cols})`);
+              args.push(`show="headings"`);
+            }
+            if (w.type === 'tk.Text' && p.wrap) {
+              args.push(`wrap=${pyStr(p.wrap)}`);
+            }
+
+            if ('fontFamily' in p && p.fontFamily) {
+              if (!w.isTtk || directAllowed.has('font')) {
+                const weight = p.fontWeight === 'bold' ? ', "bold"' : '';
+                args.push(`font=(${pyStr(p.fontFamily)}, ${p.fontSize || 10}${weight})`);
+              }
+            }
+            if ('foreground' in p && p.foreground) {
+              if (!w.isTtk) {
+                args.push(`fg=${pyStr(p.foreground)}`);
+              } else if (directAllowed.has('foreground') && p.foreground !== '#000000') {
+                args.push(`foreground=${pyStr(p.foreground)}`);
+              }
+            }
+            if ('background' in p && p.background) {
+              if (!w.isTtk) {
+                args.push(`bg=${pyStr(p.background)}`);
+              } else if (directAllowed.has('background') && p.background !== '#f0f0f0') {
+                args.push(`background=${pyStr(p.background)}`);
+              }
+            }
+
+            if ('justify' in p && p.justify && p.justify !== 'left') {
+              if (!w.isTtk || directAllowed.has('justify')) {
+                args.push(`justify=${pyStr(p.justify)}`);
+              }
+            }
+            if ('anchor' in p && p.anchor && p.anchor !== 'w') {
+              if (!w.isTtk || directAllowed.has('anchor')) {
+                args.push(`anchor=${pyStr(p.anchor)}`);
+              }
+            }
+            if ('relief' in p && p.relief && p.relief !== 'flat') {
+              if (!w.isTtk || directAllowed.has('relief')) {
+                args.push(`relief=${pyStr(p.relief)}`);
+              }
+            }
+            if ('borderwidth' in p && Number(p.borderwidth) > 0) {
+              if (!w.isTtk || directAllowed.has('borderwidth')) {
+                args.push(`borderwidth=${Number(p.borderwidth)}`);
+              }
+            }
+            if ('state' in p && p.state && p.state !== 'normal') {
+              args.push(`state=${pyStr(p.state)}`);
+            }
+            if ('command' in p && p.command) {
+              args.push(`command=self.${sanitizePythonIdentifier(p.command)}`);
+            }
+            if (p.cursor) {
+              args.push(`cursor=${pyStr(p.cursor)}`);
+            }
+            if (p.takefocus !== undefined) {
+              args.push(`takefocus=${p.takefocus ? 'True' : 'False'}`);
+            }
+
+            lines.push(`        self.${w.variable_name} = ${w.type}(${args.join(', ')})`);
+
+            if (w.type === 'ttk.Entry' && p.value && !p.textvariable) {
+              lines.push(`        self.${w.variable_name}.insert(0, ${pyStr(p.value)})`);
+            }
+            if (w.type === 'ttk.Combobox' && p.value && !p.textvariable) {
+              lines.push(`        self.${w.variable_name}.set(${pyStr(p.value)})`);
+            }
+            if (w.type === 'ttk.Spinbox' && p.value !== undefined && !p.textvariable) {
+              lines.push(`        self.${w.variable_name}.set(${Number(p.value)})`);
+            }
+            if (w.type === 'ttk.Scale' && p.value !== undefined && !p.variable) {
+              lines.push(`        self.${w.variable_name}.set(${Number(p.value)})`);
+            }
+            if (w.type === 'ttk.Checkbutton' && p.checked && !p.variable) {
+              lines.push(`        self.${w.variable_name}.state(["selected"])`);
+            }
+            if (w.type === 'ttk.Treeview' && p.columns) {
+              const cols = p.columns.split(',').map(s => s.trim()).filter(Boolean);
+              const colW = Math.max(40, Math.floor(w.width / Math.max(1, cols.length)));
+              cols.forEach(c => {
+                lines.push(`        self.${w.variable_name}.heading(${pyStr(c)}, text=${pyStr(c)})`);
+                lines.push(`        self.${w.variable_name}.column(${pyStr(c)}, width=${colW})`);
+              });
+            }
+            if (w.type === 'ttk.Notebook' && p.tabs) {
+              const tabs = p.tabs.split(',').map(s => s.trim()).filter(Boolean);
+              tabs.forEach((t, idx) => {
+                lines.push(`        ${w.variable_name}_tab_${idx + 1} = ttk.Frame(self.${w.variable_name})`);
+                lines.push(`        self.${w.variable_name}.add(${w.variable_name}_tab_${idx + 1}, text=${pyStr(t)})`);
+              });
+            }
+            if (w.type === 'ttk.PanedWindow') {
+              lines.push(`        ${w.variable_name}_pane_1 = ttk.Frame(self.${w.variable_name})`);
+              lines.push(`        ${w.variable_name}_pane_2 = ttk.Frame(self.${w.variable_name})`);
+              lines.push(`        self.${w.variable_name}.add(${w.variable_name}_pane_1, weight=1)`);
+              lines.push(`        self.${w.variable_name}.add(${w.variable_name}_pane_2, weight=1)`);
+            }
+            if (w.type === 'tk.Text' && p.text) {
+              lines.push(`        self.${w.variable_name}.insert("1.0", ${pyStr(p.text)})`);
+            }
+            if (w.type === 'tk.Listbox' && p.values) {
+              const items = p.values.split(',').map(s => s.trim()).filter(Boolean);
+              items.forEach(it => {
+                lines.push(`        self.${w.variable_name}.insert(tk.END, ${pyStr(it)})`);
+              });
+            }
+
+            lines.push(`        self.${w.variable_name}.place(x=${w.x}, y=${w.y}, width=${w.width}, height=${w.height})`);
+            lines.push(``);
+          });
+        }
+
+        if (callbacks.size > 0) {
+          lines.push(`    # =========================================================================`);
+          lines.push(`    # Event Callbacks`);
+          lines.push(`    # =========================================================================`);
+          callbacks.forEach(cb => {
+            lines.push(`    def ${cb}(self, *args):`);
+            lines.push(`        print("Triggered callback: ${cb}")`);
+            lines.push(``);
+          });
+        }
+
+        lines.push(`if __name__ == "__main__":`);
+        lines.push(`    app = Application()`);
+        lines.push(`    app.mainloop()`);
+
+        return lines.join('\n');
+      }
+
+      function highlightPython(code) {
+        const escaped = escapeHtml(code);
+        return escaped
+          .replace(/(&quot;.*?&quot;)/g, '<span class="py-str">$1</span>')
+          .replace(/(#.*$)/gm, '<span class="py-cmt">$1</span>')
+          .replace(/\b(import|from|class|def|super|try|except|pass|if|True|False|None)\b/g, '<span class="py-kw">$1</span>')
+          .replace(/\b(self)\b/g, '<span class="py-self">$1</span>')
+          .replace(/\b(tk|ttk|Application|StringVar|BooleanVar|DoubleVar|IntVar|TclError)\b/g, '<span class="py-cls">$1</span>')
+          .replace(/\b(\d+)\b/g, '<span class="py-num">$1</span>');
+      }
+
+      /* ======================================================================
+         10. SAMPLE FORM PRESETS
+         ====================================================================== */
+      function loadSamplePreset(presetKey) {
+        if (!presetKey) return;
+        state.widgets = [];
+        state.counters = {};
+        state.selectedId = null;
+
+        if (presetKey === 'login') {
+          state.window = { title: 'Sign In — Secure Portal', width: 420, height: 320, background: '#f0f0f0', resizable: false, theme: 'clam' };
+          dom.presetSizeSelect.value = 'custom';
+          const items = [
+            { type: 'ttk.Label', x: 40, y: 25, width: 340, height: 32, props: { text: 'Welcome Back', fontFamily: 'Segoe UI', fontSize: 15, fontWeight: 'bold', justify: 'center' } },
+            { type: 'ttk.Separator', x: 40, y: 65, width: 340, height: 10, props: { orient: 'horizontal' } },
+            { type: 'ttk.Label', x: 40, y: 85, width: 100, height: 24, props: { text: 'Username:' } },
+            { type: 'ttk.Entry', x: 40, y: 110, width: 340, height: 30, props: { placeholder: 'Enter your username', textvariable: 'username_var' } },
+            { type: 'ttk.Label', x: 40, y: 150, width: 100, height: 24, props: { text: 'Password:' } },
+            { type: 'ttk.Entry', x: 40, y: 175, width: 340, height: 30, props: { placeholder: 'Enter password', show: '*', textvariable: 'password_var' } },
+            { type: 'ttk.Checkbutton', x: 40, y: 215, width: 160, height: 26, props: { text: 'Remember session', variable: 'remember_var', checked: true } },
+            { type: 'ttk.Button', x: 250, y: 255, width: 130, height: 34, props: { text: 'Sign In', command: 'on_login_submit' } },
+            { type: 'ttk.Button', x: 140, y: 255, width: 100, height: 34, props: { text: 'Cancel', command: 'destroy' } }
+          ];
+          items.forEach(it => addPresetWidget(it));
+        } else if (presetKey === 'registration') {
+          state.window = { title: 'User Registration Form', width: 500, height: 500, background: '#f0f0f0', resizable: true, theme: 'clam' };
+          dom.presetSizeSelect.value = 'custom';
+          const items = [
+            { type: 'ttk.Label', x: 30, y: 20, width: 440, height: 30, props: { text: 'Create New Account', fontFamily: 'Segoe UI', fontSize: 14, fontWeight: 'bold' } },
+            { type: 'ttk.LabelFrame', x: 30, y: 60, width: 440, height: 220, props: { text: 'Account Details' } },
+            { type: 'ttk.Label', x: 50, y: 90, width: 110, height: 26, props: { text: 'Full Name:' } },
+            { type: 'ttk.Entry', x: 170, y: 90, width: 280, height: 28, props: { placeholder: 'Jane Doe', textvariable: 'fullname_var' } },
+            { type: 'ttk.Label', x: 50, y: 130, width: 110, height: 26, props: { text: 'Email Address:' } },
+            { type: 'ttk.Entry', x: 170, y: 130, width: 280, height: 28, props: { placeholder: 'jane@example.com', textvariable: 'email_var' } },
+            { type: 'ttk.Label', x: 50, y: 170, width: 110, height: 26, props: { text: 'Role:' } },
+            { type: 'ttk.Combobox', x: 170, y: 170, width: 280, height: 28, props: { value: 'Developer', values: 'Developer, Designer, Product Manager, Admin', textvariable: 'role_var' } },
+            { type: 'ttk.Label', x: 50, y: 210, width: 110, height: 26, props: { text: 'Experience (Yrs):' } },
+            { type: 'ttk.Spinbox', x: 170, y: 210, width: 100, height: 28, props: { from_: 0, to: 40, value: 4, textvariable: 'exp_var' } },
+            { type: 'ttk.Label', x: 30, y: 295, width: 120, height: 24, props: { text: 'Bio / Notes:' } },
+            { type: 'tk.Text', x: 30, y: 320, width: 440, height: 80, props: { text: 'Tell us briefly about your background...' } },
+            { type: 'ttk.Checkbutton', x: 30, y: 410, width: 260, height: 26, props: { text: 'I agree to the Terms & Privacy Policy', variable: 'terms_var', checked: true } },
+            { type: 'ttk.Button', x: 340, y: 445, width: 130, height: 34, props: { text: 'Register', command: 'on_register_click' } }
+          ];
+          items.forEach(it => addPresetWidget(it));
+        } else if (presetKey === 'dashboard') {
+          state.window = { title: 'System Diagnostics & Monitor', width: 640, height: 480, background: '#f0f0f0', resizable: true, theme: 'clam' };
+          dom.presetSizeSelect.value = '640x480';
+          const items = [
+            { type: 'ttk.Notebook', x: 20, y: 20, width: 600, height: 230, props: { tabs: 'Active Processes, Network, Storage' } },
+            { type: 'ttk.Treeview', x: 35, y: 55, width: 570, height: 180, props: { columns: 'PID, Process Name, CPU %, Memory' } },
+            { type: 'ttk.LabelFrame', x: 20, y: 265, width: 380, height: 150, props: { text: 'Resource Utilization' } },
+            { type: 'ttk.Label', x: 35, y: 295, width: 90, height: 24, props: { text: 'CPU Load:' } },
+            { type: 'ttk.Progressbar', x: 130, y: 297, width: 250, height: 20, props: { value: 72 } },
+            { type: 'ttk.Label', x: 35, y: 335, width: 90, height: 24, props: { text: 'Fan Speed:' } },
+            { type: 'ttk.Scale', x: 130, y: 335, width: 250, height: 26, props: { from_: 0, to: 100, value: 60, command: 'on_fan_change' } },
+            { type: 'ttk.LabelFrame', x: 415, y: 265, width: 205, height: 150, props: { text: 'Power Profile' } },
+            { type: 'ttk.Radiobutton', x: 430, y: 295, width: 170, height: 26, props: { text: 'Balanced', variable: 'power_mode', value: 'balanced', checked: true } },
+            { type: 'ttk.Radiobutton', x: 430, y: 325, width: 170, height: 26, props: { text: 'High Performance', variable: 'power_mode', value: 'performance', checked: false } },
+            { type: 'ttk.Radiobutton', x: 430, y: 355, width: 170, height: 26, props: { text: 'Power Saver', variable: 'power_mode', value: 'saver', checked: false } },
+            { type: 'ttk.Button', x: 490, y: 430, width: 130, height: 32, props: { text: 'Refresh Stats', command: 'on_refresh_stats' } },
+            { type: 'ttk.Sizegrip', x: 622, y: 462, width: 18, height: 18, props: {} }
+          ];
+          items.forEach(it => addPresetWidget(it));
+        }
+
+        pushHistory();
+        renderAll();
+        showToast(`Loaded "${presetKey}" sample form`);
+      }
+
+      function addPresetWidget(spec) {
+        const meta = WIDGET_CATALOG.find(m => m.type === spec.type);
+        if (!meta) return;
+        const id = 'w_' + Math.random().toString(36).slice(2, 9);
+        state.widgets.push({
+          id,
+          type: meta.type,
+          isTtk: meta.isTtk,
+          variable_name: generateUniqueVarName(meta.type),
+          x: spec.x,
+          y: spec.y,
+          width: spec.width,
+          height: spec.height,
+          props: Object.assign(JSON.parse(JSON.stringify(meta.defaults)), spec.props)
+        });
+      }
+
+      /* ======================================================================
+         11. EVENT LISTENERS & KEYBOARD SHORTCUTS
+         ====================================================================== */
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function escapeAttr(str) {
+        return escapeHtml(str);
+      }
+
+      function initEvents() {
+        // Toolbox search
+        dom.toolboxSearch.addEventListener('input', e => renderToolbox(e.target.value));
+
+        // Save & Load .gui Projects
+        const btnSaveProject = document.getElementById('btnSaveProject');
+        const btnLoadProject = document.getElementById('btnLoadProject');
+        const fileInputLoad = document.getElementById('fileInputLoad');
+
+        btnSaveProject.addEventListener('click', () => {
+          const projectData = {
+            version: '1.0',
+            app: 'Tkinter Gui',
+            window: state.window,
+            widgets: state.widgets,
+            grid: state.grid
+          };
+          const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${sanitizePythonIdentifier(state.window.title, 'form')}.gui`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('Project saved successfully as .gui');
+        });
+
+        btnLoadProject.addEventListener('click', () => {
+          fileInputLoad.click();
+        });
+
+        fileInputLoad.addEventListener('change', e => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            try {
+              const data = JSON.parse(event.target.result);
+              if (data.window && Array.isArray(data.widgets)) {
+                state.window = data.window;
+                state.widgets = data.widgets;
+                if (data.grid) state.grid = data.grid;
+                state.selectedId = null;
+                state.counters = {};
+                pushHistory();
+                renderAll();
+                showToast('Project loaded successfully!');
+              } else {
+                showToast('Invalid .gui project file format.');
+              }
+            } catch (err) {
+              showToast('Error parsing .gui project file.');
+            }
+            fileInputLoad.value = '';
+          };
+          reader.readAsText(file);
+        });
+
+        // Canvas Drop Target (handles drops on canvas surface or child elements)
+        const canvasViewport = document.getElementById('canvasViewport');
+
+        function handleCanvasDragOver(e) {
+          e.preventDefault();
+          if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+          dom.tkCanvasSurface.classList.add('drag-over');
+        }
+
+        function handleCanvasDrop(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dom.tkCanvasSurface.classList.remove('drag-over');
+          const type = e.dataTransfer ? e.dataTransfer.getData('text/plain') : '';
+          if (!type) return;
+          const rect = dom.tkCanvasSurface.getBoundingClientRect();
+          const dropX = e.clientX - rect.left;
+          const dropY = e.clientY - rect.top;
+          createWidgetAt(type, dropX, dropY);
+        }
+
+        dom.tkCanvasSurface.addEventListener('dragover', handleCanvasDragOver);
+        canvasViewport.addEventListener('dragover', handleCanvasDragOver);
+
+        dom.tkCanvasSurface.addEventListener('dragleave', e => {
+          if (e.target === dom.tkCanvasSurface) {
+            dom.tkCanvasSurface.classList.remove('drag-over');
+          }
+        });
+
+        dom.tkCanvasSurface.addEventListener('drop', handleCanvasDrop);
+        canvasViewport.addEventListener('drop', handleCanvasDrop);
+
+        // Click on empty canvas or titlebar selects Root Window
+        dom.tkCanvasSurface.addEventListener('mousedown', e => {
+          if (e.target === dom.tkCanvasSurface) {
+            selectWidget(null);
+          }
+        });
+        dom.tkTitlebar.addEventListener('click', () => selectWidget(null));
+
+        // Window size preset selector
+        dom.presetSizeSelect.addEventListener('change', e => {
+          const val = e.target.value;
+          if (val === 'custom') return;
+          const [w, h] = val.split('x').map(Number);
+          state.window.width = w;
+          state.window.height = h;
+          renderAll();
+          pushHistory();
+        });
+
+        // Grid & Snap controls
+        dom.btnToggleGrid.addEventListener('click', () => {
+          state.grid.enabled = !state.grid.enabled;
+          dom.btnToggleGrid.classList.toggle('active', state.grid.enabled);
+          renderWindowFrame();
+        });
+
+        dom.btnToggleSnap.addEventListener('click', () => {
+          state.grid.snap = !state.grid.snap;
+          dom.btnToggleSnap.classList.toggle('active', state.grid.snap);
+        });
+
+        dom.gridSizeSelect.addEventListener('change', e => {
+          state.grid.size = parseInt(e.target.value, 10) || 10;
+          renderWindowFrame();
+        });
+
+        // Undo / Redo
+        dom.btnUndo.addEventListener('click', undo);
+        dom.btnRedo.addEventListener('click', redo);
+
+        // Sample presets
+        dom.samplePresetSelect.addEventListener('change', e => {
+          loadSamplePreset(e.target.value);
+          e.target.value = '';
+        });
+
+        // Clear Canvas
+        dom.btnClear.addEventListener('click', () => {
+          if (state.widgets.length === 0) return;
+          state.widgets = [];
+          state.selectedId = null;
+          pushHistory();
+          renderAll();
+          showToast('Canvas cleared');
+        });
+
+        // Preview Code Modal
+        dom.btnPreviewCode.addEventListener('click', () => {
+          try {
+            const code = generatePythonCode();
+            dom.codePreviewContent.innerHTML = highlightPython(code);
+            dom.codeModal.classList.add('open');
+          } catch (err) {
+            console.error('Code generation error:', err);
+            showToast('Error generating Python code.');
+          }
+        });
+
+        dom.btnCloseModal.addEventListener('click', () => {
+          dom.codeModal.classList.remove('open');
+        });
+
+        dom.codeModal.addEventListener('click', e => {
+          if (e.target === dom.codeModal) dom.codeModal.classList.remove('open');
+        });
+
+        // Copy Code to Clipboard (execCommand fallback for iframe safety)
+        dom.btnCopyCode.addEventListener('click', () => {
+          const code = generatePythonCode();
+          const ta = document.createElement('textarea');
+          ta.value = code;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            showToast('Python code copied to clipboard!');
+          } catch (err) {
+            showToast('Unable to copy automatically.');
+          }
+          document.body.removeChild(ta);
+        });
+
+        // Export .py File Download
+        function downloadPythonFile() {
+          try {
+            const code = generatePythonCode();
+            const blob = new Blob([code], { type: 'text/x-python;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tkinter_form.py';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Exported tkinter_form.py');
+          } catch (err) {
+            console.error('Export error:', err);
+            showToast('Error exporting Python file.');
+          }
+        }
+
+        dom.btnExportPy.addEventListener('click', downloadPythonFile);
+        dom.btnModalDownload.addEventListener('click', downloadPythonFile);
+
+        // Keyboard Shortcuts (Delete, Arrow Nudge, Ctrl+Z, Ctrl+Y, Ctrl+D)
+        window.addEventListener('keydown', e => {
+          const tag = document.activeElement?.tagName;
+          const isEditingInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+          // Undo / Redo
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !isEditingInput) {
+            e.preventDefault();
+            if (e.shiftKey) redo(); else undo();
+            return;
+          }
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y' && !isEditingInput) {
+            e.preventDefault();
+            redo();
+            return;
+          }
+
+          // Duplicate
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd' && !isEditingInput) {
+            e.preventDefault();
+            duplicateSelectedWidget();
+            return;
+          }
+
+          if (isEditingInput) return;
+
+          const w = getSelectedWidget();
+          if (!w) return;
+
+          // Delete selected widget
+          if (e.key === 'Delete' || e.key === 'Backspace') {
+            e.preventDefault();
+            deleteWidget(w.id);
+            return;
+          }
+
+          // Arrow keys to nudge
+          const step = e.shiftKey ? 10 : 1;
+          let moved = false;
+          if (e.key === 'ArrowLeft')  { w.x = Math.max(0, w.x - step); moved = true; }
+          if (e.key === 'ArrowRight') { w.x = Math.min(state.window.width - w.width, w.x + step); moved = true; }
+          if (e.key === 'ArrowUp')    { w.y = Math.max(0, w.y - step); moved = true; }
+          if (e.key === 'ArrowDown')  { w.y = Math.min(state.window.height - w.height, w.y + step); moved = true; }
+
+          if (moved) {
+            e.preventDefault();
+            renderCanvasWidgets();
+            renderInspector();
+            updateHud();
+            pushHistory();
+          }
+        });
+      }
+
+      /* ======================================================================
+         12. BOOTSTRAP APPLICATION
+         ====================================================================== */
+      renderToolbox();
+      initEvents();
+      pushHistory();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
